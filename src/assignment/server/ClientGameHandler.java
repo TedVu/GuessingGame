@@ -6,16 +6,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.Queue;
 
 import assignment.client.Status;
 
-public class ClientHandler extends Thread {
+public class ClientGameHandler extends Thread {
 	private Socket connection;
 	private BufferedWriter out;
 	private BufferedReader in;
 	private int randomNum;
 
-	public ClientHandler(Socket connection, int randomNum) {
+	public ClientGameHandler(Socket connection, int randomNum) {
 		this.connection = connection;
 		this.randomNum = randomNum;
 	}

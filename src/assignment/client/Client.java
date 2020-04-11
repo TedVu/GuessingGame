@@ -39,7 +39,7 @@ public class Client {
 				String response = inSocket.readLine();
 				if (response.equalsIgnoreCase(Status.SUCCESS.toString())) {
 					String result = inSocket.readLine();
-					System.out.println(result);
+					System.out.println("\n" + result);
 					break;
 				} else {
 					System.out.println("\n" + response + "\n");
