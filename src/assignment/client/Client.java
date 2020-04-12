@@ -24,13 +24,26 @@ public class Client {
 
 		try {
 			socket = new Socket(HOST, PORT);
+			inputClient = new Scanner(System.in);
+
 			outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String registrationMsg = inSocket.readLine();
+			String nameMsg = inSocket.readLine();
+
+			System.out.println(registrationMsg + "\n");
+			System.out.print(nameMsg);
+			String nameResponse = inputClient.nextLine();
+			outSocket.write(nameResponse);
+			outSocket.write("\n");
+			outSocket.flush();
+
+			
+			System.exit(0);
 			String welcomeMsg = inSocket.readLine();
 			String command = inSocket.readLine();
 			System.out.println("\t" + welcomeMsg + "\n");
 			System.out.print(command + " ");
-			inputClient = new Scanner(System.in);
 			do {
 				String guessString = inputClient.nextLine();
 				outSocket.write(guessString);

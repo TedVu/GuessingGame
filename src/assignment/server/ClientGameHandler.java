@@ -15,6 +15,7 @@ public class ClientGameHandler extends Thread {
 	private BufferedWriter out;
 	private BufferedReader in;
 	private int randomNum;
+	private String clientName;
 
 	public ClientGameHandler(Socket connection, int randomNum) {
 		this.connection = connection;
@@ -78,5 +79,9 @@ public class ClientGameHandler extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 }
