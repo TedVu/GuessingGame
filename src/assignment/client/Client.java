@@ -17,23 +17,23 @@ public class Client {
 	private Scanner inputClient;
 
 	public Client() {
-		while (true) {
-			try {
-				socket = new Socket(HOST, PORT);
-				inputClient = new Scanner(System.in);
+		try {
+			socket = new Socket(HOST, PORT);
+			inputClient = new Scanner(System.in);
 
-				outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-				inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				String registrationMsg = inSocket.readLine();
-				String nameMsg = inSocket.readLine();
+			outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			String registrationMsg = inSocket.readLine();
+			String nameMsg = inSocket.readLine();
 
-				System.out.println(registrationMsg + "\n");
-				System.out.print(nameMsg);
-				String nameResponse = inputClient.nextLine();
-				outSocket.write(nameResponse);
-				outSocket.write("\n");
-				outSocket.flush();
-				// sending server side
+			System.out.println(registrationMsg + "\n");
+			System.out.print(nameMsg);
+			String nameResponse = inputClient.nextLine();
+			outSocket.write(nameResponse);
+			outSocket.write("\n");
+			outSocket.flush();
+			// sending server side
+			while (true) {
 				String pendingMsg = inSocket.readLine();
 				System.out.println("\n" + pendingMsg + "\n");
 				String welcomeMsg = inSocket.readLine();
@@ -78,13 +78,14 @@ public class Client {
 				outSocket.write("\n");
 				outSocket.flush();
 				if (answer.equalsIgnoreCase("q")) {
+					String goodbyeMsg = inSocket.readLine();
+					System.out.println(goodbyeMsg);
 					break;
-				} else {
-					System.out.println("\nWaiting for server to announce next available round\n");
 				}
-
-			} catch (Exception e) {
 			}
+
+		} catch (Exception e) {
 		}
+
 	}
 }

@@ -2,7 +2,6 @@ package assignment.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -35,14 +34,20 @@ public class RepromptForRegistrationHandler extends Thread {
 				if (answer.equalsIgnoreCase("p") && queue.size() < 6) {
 					synchronized (queue) {
 						queue.remove();
-						queue.add(client);
-						break;
+						queue.add(new ClientGameHandler(connection, client.getClientName()));
 					}
+					out.write("Waiting for server to announce next available round...\n");
+					out.flush();
+
+					break;
+
 				} else if (answer.equalsIgnoreCase("q")) {
-					
+
 					synchronized (queue) {
 						queue.remove();
 					}
+					out.write("Goodbye\n");
+					out.flush();
 					break;
 				} else if (queue.size() == 6) {
 					continue;

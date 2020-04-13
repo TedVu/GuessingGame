@@ -67,7 +67,6 @@ public class Server {
 											onRound = true;
 										}
 
-										round++;
 										Set<ClientGameHandler> playersInCurrentRound = new HashSet<ClientGameHandler>();
 										Iterator<ClientGameHandler> it = lobbyQueue.iterator();
 										int numPlayer = 0;
@@ -105,7 +104,7 @@ public class Server {
 											try {
 												writer = new BufferedWriter(
 														new OutputStreamWriter(playerSocket.getOutputStream()));
-												writer.write("Final result of the game\n");
+												writer.write("Final result of round " + round + "\n");
 												writer.flush();
 												writer.write(finalResult.toString());
 												writer.write("\n");
@@ -133,10 +132,10 @@ public class Server {
 											}
 										}
 										synchronized (onRound) {
+											round++;
 											onRound = false;
-											initialPrompt = true;
 										}
-
+										initialPrompt = true;
 									} else {
 										initialPrompt = true;
 										System.out.println(

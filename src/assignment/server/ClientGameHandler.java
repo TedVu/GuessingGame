@@ -23,6 +23,11 @@ public class ClientGameHandler extends Thread {
 		this.connection = connection;
 	}
 
+	public ClientGameHandler(Socket connection, String clientName) {
+		this.connection = connection;
+		this.clientName = clientName;
+	}
+
 	/*
 	 * (non-Javadoc) To be implement some logic for guessing game here
 	 */
