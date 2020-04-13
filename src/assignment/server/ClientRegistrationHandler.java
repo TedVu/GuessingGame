@@ -36,10 +36,11 @@ public class ClientRegistrationHandler implements Runnable {
 			String nameClient = in.readLine();
 			// doing some looping validation here
 			clientHandler.setClientName(nameClient);
+			out.write("Please wait for next available round...\n");
+			out.flush();
 			synchronized (queue) {
 				queue.add(clientHandler);
 			}
-			
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -47,7 +48,5 @@ public class ClientRegistrationHandler implements Runnable {
 		}
 
 	}
-
-
 
 }

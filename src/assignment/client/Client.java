@@ -33,13 +33,18 @@ public class Client {
 				outSocket.write(nameResponse);
 				outSocket.write("\n");
 				outSocket.flush();
-				System.out.println("\nWaiting for available round...\n");
+				// sending server side
+				String pendingMsg = inSocket.readLine();
+				System.out.println("\n" + pendingMsg + "\n");
 				String welcomeMsg = inSocket.readLine();
 				String command = inSocket.readLine();
 				System.out.println("\t" + welcomeMsg + "\n");
 				System.out.print(command + " ");
 				do {
 					String guessString = inputClient.nextLine();
+					if (guessString.equalsIgnoreCase("e")) {
+						break;
+					}
 					outSocket.write(guessString);
 					outSocket.write("\n");
 					outSocket.flush();
@@ -65,7 +70,6 @@ public class Client {
 				System.out.println("\n\t" + finalMsg + "\t");
 				String finalResult = inSocket.readLine();
 				System.out.println("\n" + finalResult);
-				System.exit(0);
 				String repromptMsg = inSocket.readLine();
 				System.out.print("\n" + repromptMsg);
 				String answer = inputClient.nextLine();

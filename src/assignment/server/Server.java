@@ -24,7 +24,7 @@ public class Server {
 	private Socket connection;
 	private Queue<ClientGameHandler> lobbyQueue;
 	private int round;
-	private boolean onRound;
+	private Boolean onRound;
 
 	private boolean initialPrompt = true;
 
@@ -63,7 +63,10 @@ public class Server {
 
 										// 3 are playing, 3 are waiting => there cannot be concurrent round play
 										// wait for next available round
-										onRound = true;
+										synchronized (onRound) {
+											onRound = true;
+										}
+
 										round++;
 										Set<ClientGameHandler> playersInCurrentRound = new HashSet<ClientGameHandler>();
 										Iterator<ClientGameHandler> it = lobbyQueue.iterator();
@@ -118,7 +121,6 @@ public class Server {
 											repromptThreads.add(reprompt);
 											reprompt.start();
 										}
-
 										while (true) {
 											boolean threadFinish = false;
 											for (RepromptForRegistrationHandler repromptThread : repromptThreads) {
@@ -130,12 +132,15 @@ public class Server {
 												break;
 											}
 										}
-
-										onRound = false;
+										synchronized (onRound) {
+											onRound = false;
+											initialPrompt = true;
+										}
 
 									} else {
+										initialPrompt = true;
 										System.out.println(
-												"There is currently ongoing round or not enough people for this round");
+												"There is currently ongoing round or no people joining this round");
 									}
 								} else {
 									System.out.println("Invalid command\n");

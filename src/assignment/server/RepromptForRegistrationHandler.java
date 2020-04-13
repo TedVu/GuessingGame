@@ -24,7 +24,7 @@ public class RepromptForRegistrationHandler extends Thread {
 
 	@Override
 	public void run() {
-
+		connection = client.getConnection();
 		try {
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -34,15 +34,20 @@ public class RepromptForRegistrationHandler extends Thread {
 				String answer = in.readLine();
 				if (answer.equalsIgnoreCase("p") && queue.size() < 6) {
 					synchronized (queue) {
+						queue.remove();
 						queue.add(client);
 						break;
 					}
 				} else if (answer.equalsIgnoreCase("q")) {
+					
+					synchronized (queue) {
+						queue.remove();
+					}
 					break;
 				} else if (queue.size() == 6) {
 					continue;
-				}else {
-					// error msg here
+				} else {
+					// handling error here
 				}
 			}
 		} catch (Exception e) {

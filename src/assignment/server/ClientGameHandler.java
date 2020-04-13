@@ -40,6 +40,9 @@ public class ClientGameHandler extends Thread {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
 				String inClient = in.readLine();
+				if (inClient.equalsIgnoreCase("e")) {
+					break;
+				}
 				try {
 					int guessNum = Integer.parseInt(inClient);
 					if (guessNum == randomNum) {
