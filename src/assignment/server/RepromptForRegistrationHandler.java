@@ -45,9 +45,8 @@ public class RepromptForRegistrationHandler extends Thread {
 					// error msg here
 				}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
 	}

@@ -1,6 +1,5 @@
 package assignment.server;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -27,6 +26,8 @@ public class Server {
 	private int round;
 	private boolean onRound;
 
+	private boolean initialPrompt = true;
+
 	public Server() {
 		ServerSocket server;
 		round = 1;
@@ -49,81 +50,98 @@ public class Server {
 				Thread startGameThread = new Thread() {
 					public synchronized void run() {
 						while (true) {
-							System.out.print("Enter START to start game:");
-							Scanner in = new Scanner(System.in);
-							String cmd = in.nextLine();
-							if (cmd.equalsIgnoreCase("START")) {
-								if (!onRound && lobbyQueue.size() > 0) {
-									int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
+							if (initialPrompt) {
+								initialPrompt = false;
 
-									// 3 are playing, 3 are waiting => there cannot be concurrent round play
-									// wait for next available round
-									onRound = true;
-									round++;
-									Set<ClientGameHandler> playersInCurrentRound = new HashSet<ClientGameHandler>();
-									Iterator<ClientGameHandler> it = lobbyQueue.iterator();
-									int numPlayer = 0;
+								System.out.print("Enter START to start game:");
+								Scanner in = new Scanner(System.in);
+								String cmd = in.nextLine();
+								if (cmd.equalsIgnoreCase("START")) {
+									if (!onRound && lobbyQueue.size() > 0) {
+										int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
+										System.out.println("Random Number in this round:" + randomNum);
 
-									while (it.hasNext() && numPlayer < MAX_PLAYER_EACH_ROUND) {
-										ClientGameHandler player = it.next();
-										player.setRandomNum(randomNum);
-										player.start();
-										playersInCurrentRound.add(player);
-										numPlayer++;
-									}
-									while (true) {
-										boolean guessContinue = false;
+										// 3 are playing, 3 are waiting => there cannot be concurrent round play
+										// wait for next available round
+										onRound = true;
+										round++;
+										Set<ClientGameHandler> playersInCurrentRound = new HashSet<ClientGameHandler>();
+										Iterator<ClientGameHandler> it = lobbyQueue.iterator();
+										int numPlayer = 0;
 
-										for (ClientGameHandler thread : playersInCurrentRound) {
-											if (thread.isAlive()) {
-												guessContinue = true;
+										while (it.hasNext() && numPlayer < MAX_PLAYER_EACH_ROUND) {
+											ClientGameHandler player = it.next();
+											player.setRandomNum(randomNum);
+											player.start();
+											playersInCurrentRound.add(player);
+											numPlayer++;
+										}
+										while (true) {
+											boolean guessContinue = false;
+
+											for (ClientGameHandler thread : playersInCurrentRound) {
+												if (thread.isAlive()) {
+													guessContinue = true;
+												}
+											}
+											if (!guessContinue) {
+												break;
 											}
 										}
-										if (!guessContinue) {
-											break;
-										}
-									}
-									// write the final result to each client here
-									Set<Socket> playerSockets = new HashSet<Socket>();
-									StringBuilder finalResult = new StringBuilder();
-									for (ClientGameHandler player : playersInCurrentRound) {
-										playerSockets.add(player.getConnection());
-										finalResult.append(player.getName()).append(" ")
-												.append(player.getNumGuessClient()).append(" ");
-									}
-									for (Socket playerSocket : playerSockets) {
-										try {
-											writer = new BufferedWriter(
-													new OutputStreamWriter(playerSocket.getOutputStream()));
-											writer.write(finalResult.toString());
-											writer.write("\n");
-											writer.flush();
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
-									}
-									Set<RepromptForRegistrationHandler> repromptThreads = new HashSet<>();
-									for (ClientGameHandler player : playersInCurrentRound) {
-										RepromptForRegistrationHandler reprompt = new RepromptForRegistrationHandler(
-												lobbyQueue, player);
-										repromptThreads.add(reprompt);
-										reprompt.start();
-									}
-									for (RepromptForRegistrationHandler repromptThread : repromptThreads) {
-										if (repromptThread.isAlive()) {
-											continue;
-										}
-									}
 
-									onRound = false;
+										// write the final result to each client here
+										Set<Socket> playerSockets = new HashSet<Socket>();
+										StringBuilder finalResult = new StringBuilder();
+										for (ClientGameHandler player : playersInCurrentRound) {
+											playerSockets.add(player.getConnection());
+											finalResult.append(player.getClientName()).append(" ")
+													.append(player.getNumGuessClient()).append(" ");
+										}
 
+										for (Socket playerSocket : playerSockets) {
+											try {
+												writer = new BufferedWriter(
+														new OutputStreamWriter(playerSocket.getOutputStream()));
+												writer.write("Final result of the game\n");
+												writer.flush();
+												writer.write(finalResult.toString());
+												writer.write("\n");
+												writer.flush();
+											} catch (IOException e) {
+
+											}
+										}
+										Set<RepromptForRegistrationHandler> repromptThreads = new HashSet<>();
+										for (ClientGameHandler player : playersInCurrentRound) {
+											RepromptForRegistrationHandler reprompt = new RepromptForRegistrationHandler(
+													lobbyQueue, player);
+											repromptThreads.add(reprompt);
+											reprompt.start();
+										}
+
+										while (true) {
+											boolean threadFinish = false;
+											for (RepromptForRegistrationHandler repromptThread : repromptThreads) {
+												if (repromptThread.isAlive()) {
+													threadFinish = true;
+												}
+											}
+											if (!threadFinish) {
+												break;
+											}
+										}
+
+										onRound = false;
+
+									} else {
+										System.out.println(
+												"There is currently ongoing round or not enough people for this round");
+									}
 								} else {
-									System.out.println(
-											"There is currently ongoing round or not enough people for this round");
+									System.out.println("Invalid command\n");
 								}
 							} else {
-								System.out.println("Invalid command\n");
+								break;
 							}
 						}
 					}
@@ -133,7 +151,7 @@ public class Server {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("HERE");
 		}
 	}
 }

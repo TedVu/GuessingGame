@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 import assignment.client.Status;
 
@@ -27,13 +28,12 @@ public class ClientGameHandler extends Thread {
 	 */
 	@Override
 	public void run() {
-		int numGuess = 4;
+		int numGuess = 3;
 		boolean guessSuccess = false;
 		try {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-			System.out.println("Random Number in this round:" + randomNum);
 			out.write("Welcome to guessing game\n");
 
 			do {
@@ -76,9 +76,10 @@ public class ClientGameHandler extends Thread {
 				out.flush();
 			}
 
-		} catch (IOException e) {
+		} catch (SocketException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+		} catch (IOException e) {
 		}
 	}
 
@@ -92,6 +93,10 @@ public class ClientGameHandler extends Thread {
 
 	public Socket getConnection() {
 		return connection;
+	}
+
+	public String getClientName() {
+		return this.clientName;
 	}
 
 	public int getNumGuessClient() {
