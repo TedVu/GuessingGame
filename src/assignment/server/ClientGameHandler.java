@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Queue;
 
 import assignment.client.Status;
 
@@ -16,10 +15,11 @@ public class ClientGameHandler extends Thread {
 	private BufferedReader in;
 	private int randomNum;
 	private String clientName;
+	private int numClientGuess = 0;
+	boolean playAgain = false;
 
-	public ClientGameHandler(Socket connection, int randomNum) {
+	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
-		this.randomNum = randomNum;
 	}
 
 	/*
@@ -47,11 +47,12 @@ public class ClientGameHandler extends Thread {
 						break;
 					} else if (guessNum > randomNum) {
 						out.write("Your guess is larger than the generated number\n");
-
 						out.flush();
+						++numClientGuess;
 					} else {
 						out.write("Your guess is smaller than the generated number\n");
 						out.flush();
+						++numClientGuess;
 					}
 					out.flush();
 					--numGuess;
@@ -81,7 +82,19 @@ public class ClientGameHandler extends Thread {
 		}
 	}
 
+	public void setRandomNum(int randomNum) {
+		this.randomNum = randomNum;
+	}
+
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+
+	public Socket getConnection() {
+		return connection;
+	}
+
+	public int getNumGuessClient() {
+		return numClientGuess;
 	}
 }
