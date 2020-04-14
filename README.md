@@ -6,4 +6,4 @@ GuessingGame implemented as part of Network Programming course
 2. Handling error control flow
 3. Testing Multiplayer Logic 
 4. Refactor code
-5. Documentation and Adherence to Assignement Specs 
+5. Documentation and Adherence to Assignment Specs 
