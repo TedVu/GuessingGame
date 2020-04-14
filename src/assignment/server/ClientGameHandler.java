@@ -46,6 +46,7 @@ public class ClientGameHandler extends Thread {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
 				String inClient = in.readLine();
+				if(this.isInterrupted()) {break;}
 				if (inClient.equalsIgnoreCase("e")) {
 					numClientGuess--;
 					exitGuess = true;
@@ -76,15 +77,15 @@ public class ClientGameHandler extends Thread {
 					out.write("Invalid input\n");
 					out.flush();
 				}
-			} while (numGuess >= 1);
+			} while (numGuess >= 1 && !this.isInterrupted());
 
-			if (!exitGuess) {
+			if (!exitGuess && !this.isInterrupted()) {
 				if (guessSuccess) {
 					out.write(Status.SUCCESS.toString());
 					out.write("\n");
 					out.write("Congratulations\n");
 					out.flush();
-				} else {
+				} else if (this.isAlive()) {
 					out.write(Status.FAIL.toString());
 					out.write("\n");
 					out.write("Game Over - The correct number is: " + randomNum + "\n");

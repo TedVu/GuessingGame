@@ -47,8 +47,14 @@ public class Client {
 						outSocket.write("\n");
 						outSocket.flush();
 						String exitMsg = inSocket.readLine();
-						System.out.println(exitMsg + "\n");
+						if (!exitMsg.equalsIgnoreCase("TIMEOUTCODE")) {
+							System.out.println(exitMsg + "\n");
+						} else {
+							String timeOutMsg = inSocket.readLine();
+							System.out.println(timeOutMsg + "\n");
+						}
 						break;
+
 					}
 					outSocket.write(guessString);
 					outSocket.write("\n");

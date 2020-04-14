@@ -82,7 +82,7 @@ public class Server {
 											@Override
 											public void run() {
 												try {
-													Thread.sleep(5000);
+													Thread.sleep(10000);
 													synchronized (endTimer) {
 														endTimer = true;
 													}
@@ -112,6 +112,7 @@ public class Server {
 											endTimer = false;
 											for (ClientGameHandler thread : playersInCurrentRound) {
 												if (thread.isAlive()) {
+													thread.interrupt();
 													try {
 														writer = new BufferedWriter(new OutputStreamWriter(
 																thread.getConnection().getOutputStream()));
@@ -126,7 +127,6 @@ public class Server {
 														// TODO Auto-generated catch block
 														e.printStackTrace();
 													}
-													thread.interrupt();
 												}
 											}
 										}
@@ -136,7 +136,7 @@ public class Server {
 										StringBuilder finalResult = new StringBuilder();
 										for (ClientGameHandler player : playersInCurrentRound) {
 											playerSockets.add(player.getConnection());
-											if (!player.getExitGuess()) {
+											if (!player.getExitGuess() && !player.isInterrupted()) {
 												finalResult.append(player.getClientName()).append(" ")
 														.append(player.getNumGuessClient()).append(" ");
 											}
