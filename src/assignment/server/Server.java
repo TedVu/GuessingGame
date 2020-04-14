@@ -25,6 +25,7 @@ public class Server {
 	private Queue<ClientGameHandler> lobbyQueue;
 	private int round;
 	private Boolean onRound;
+	private Boolean endTimer = false;
 
 	private boolean initialPrompt = true;
 
@@ -45,21 +46,20 @@ public class Server {
 				Thread regThread = new Thread(new ClientRegistrationHandler(lobbyQueue, clientHandler, connection));
 				regThread.start();
 
-				// another thread for starting game, will pick up client to start game
-
 				Thread startGameThread = new Thread() {
 					public synchronized void run() {
 						while (true) {
+							// synching effect when prompting
 							if (initialPrompt) {
 								initialPrompt = false;
 
-								System.out.print("Enter START to start game:");
+								System.out.print("\nEnter START to start game:");
 								Scanner in = new Scanner(System.in);
 								String cmd = in.nextLine();
 								if (cmd.equalsIgnoreCase("START")) {
 									if (!onRound && lobbyQueue.size() > 0) {
 										int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
-										System.out.println("Random Number in this round:" + randomNum);
+										System.out.println("\nRandom Number in this round:" + randomNum);
 
 										// 3 are playing, 3 are waiting => there cannot be concurrent round play
 										// wait for next available round
@@ -78,7 +78,24 @@ public class Server {
 											playersInCurrentRound.add(player);
 											numPlayer++;
 										}
-										while (true) {
+										Thread trackTime = new Thread() {
+											@Override
+											public void run() {
+												try {
+													Thread.sleep(5000);
+													synchronized (endTimer) {
+														endTimer = true;
+													}
+
+												} catch (InterruptedException e) {
+													// TODO Auto-generated catch block
+													e.printStackTrace();
+												}
+											}
+										};
+										trackTime.start();
+
+										while (true && !endTimer) {
 											boolean guessContinue = false;
 
 											for (ClientGameHandler thread : playersInCurrentRound) {
@@ -91,13 +108,38 @@ public class Server {
 											}
 										}
 
+										if (endTimer) {
+											endTimer = false;
+											for (ClientGameHandler thread : playersInCurrentRound) {
+												if (thread.isAlive()) {
+													try {
+														writer = new BufferedWriter(new OutputStreamWriter(
+																thread.getConnection().getOutputStream()));
+														writer.write("TIMEOUTCODE");
+														writer.write("\n");
+														writer.flush();
+														writer.write("Game Ended due to timeout");
+														writer.write("\n");
+														writer.flush();
+
+													} catch (IOException e) {
+														// TODO Auto-generated catch block
+														e.printStackTrace();
+													}
+													thread.interrupt();
+												}
+											}
+										}
+
 										// write the final result to each client here
 										Set<Socket> playerSockets = new HashSet<Socket>();
 										StringBuilder finalResult = new StringBuilder();
 										for (ClientGameHandler player : playersInCurrentRound) {
 											playerSockets.add(player.getConnection());
-											finalResult.append(player.getClientName()).append(" ")
-													.append(player.getNumGuessClient()).append(" ");
+											if (!player.getExitGuess()) {
+												finalResult.append(player.getClientName()).append(" ")
+														.append(player.getNumGuessClient()).append(" ");
+											}
 										}
 
 										for (Socket playerSocket : playerSockets) {
@@ -110,7 +152,7 @@ public class Server {
 												writer.write("\n");
 												writer.flush();
 											} catch (IOException e) {
-
+												e.printStackTrace();
 											}
 										}
 										Set<RepromptForRegistrationHandler> repromptThreads = new HashSet<>();
@@ -139,7 +181,7 @@ public class Server {
 									} else {
 										initialPrompt = true;
 										System.out.println(
-												"There is currently ongoing round or no people joining this round");
+												"\nThere is currently ongoing round or no people joining this round");
 									}
 								} else {
 									System.out.println("Invalid command\n");
@@ -155,7 +197,6 @@ public class Server {
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			System.out.println("HERE");
 		}
 	}
 }

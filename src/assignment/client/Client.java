@@ -43,12 +43,22 @@ public class Client {
 				do {
 					String guessString = inputClient.nextLine();
 					if (guessString.equalsIgnoreCase("e")) {
+						outSocket.write("e");
+						outSocket.write("\n");
+						outSocket.flush();
+						String exitMsg = inSocket.readLine();
+						System.out.println(exitMsg + "\n");
 						break;
 					}
 					outSocket.write(guessString);
 					outSocket.write("\n");
 					outSocket.flush();
 					String response = inSocket.readLine();
+					if (response.equalsIgnoreCase("TIMEOUTCODE")) {
+						String timeOutMsg = inSocket.readLine();
+						System.out.println(timeOutMsg + "\n");
+						break;
+					}
 					if (response.equalsIgnoreCase(Status.SUCCESS.toString())) {
 						String result = inSocket.readLine();
 						System.out.println("\n" + result);
@@ -67,6 +77,7 @@ public class Client {
 					}
 				} while (true);
 				String finalMsg = inSocket.readLine();
+
 				System.out.println("\n\t" + finalMsg + "\t");
 				String finalResult = inSocket.readLine();
 				System.out.println("\n" + finalResult);

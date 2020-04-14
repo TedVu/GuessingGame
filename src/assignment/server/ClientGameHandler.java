@@ -16,8 +16,9 @@ public class ClientGameHandler extends Thread {
 	private BufferedReader in;
 	private int randomNum;
 	private String clientName;
-	private int numClientGuess = 0;
+	private int numClientGuess = 1;
 	boolean playAgain = false;
+	private boolean exitGuess = false;
 
 	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
@@ -33,7 +34,7 @@ public class ClientGameHandler extends Thread {
 	 */
 	@Override
 	public void run() {
-		int numGuess = 3;
+		int numGuess = 4;
 		boolean guessSuccess = false;
 		try {
 
@@ -46,6 +47,11 @@ public class ClientGameHandler extends Thread {
 				out.flush();
 				String inClient = in.readLine();
 				if (inClient.equalsIgnoreCase("e")) {
+					numClientGuess--;
+					exitGuess = true;
+
+					out.write("You exited the game - Please wait for others to finish the game...\n");
+					out.flush();
 					break;
 				}
 				try {
@@ -72,16 +78,18 @@ public class ClientGameHandler extends Thread {
 				}
 			} while (numGuess >= 1);
 
-			if (guessSuccess) {
-				out.write(Status.SUCCESS.toString());
-				out.write("\n");
-				out.write("Congratulations\n");
-				out.flush();
-			} else {
-				out.write(Status.FAIL.toString());
-				out.write("\n");
-				out.write("Game Over - The correct number is: " + randomNum + "\n");
-				out.flush();
+			if (!exitGuess) {
+				if (guessSuccess) {
+					out.write(Status.SUCCESS.toString());
+					out.write("\n");
+					out.write("Congratulations\n");
+					out.flush();
+				} else {
+					out.write(Status.FAIL.toString());
+					out.write("\n");
+					out.write("Game Over - The correct number is: " + randomNum + "\n");
+					out.flush();
+				}
 			}
 
 		} catch (SocketException e) {
@@ -109,5 +117,9 @@ public class ClientGameHandler extends Thread {
 
 	public int getNumGuessClient() {
 		return numClientGuess;
+	}
+
+	public boolean getExitGuess() {
+		return exitGuess;
 	}
 }
