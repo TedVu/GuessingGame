@@ -28,6 +28,26 @@ public enum Status {
 			return "CONTINUE";
 		}
 
+	},
+
+	TIMEOUT {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "TIMEOUT";
+		}
+
+	},
+
+	EXIT {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "EXIT";
+		}
+
 	};
 
 	public abstract String toString();

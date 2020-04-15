@@ -42,25 +42,13 @@ public class Client {
 				System.out.print(command + " ");
 				do {
 					String guessString = inputClient.nextLine();
-					if (guessString.equalsIgnoreCase("e")) {
-						outSocket.write("e");
-						outSocket.write("\n");
-						outSocket.flush();
-						String exitMsg = inSocket.readLine();
-						if (!exitMsg.equalsIgnoreCase("TIMEOUTCODE")) {
-							System.out.println(exitMsg + "\n");
-						} else {
-							String timeOutMsg = inSocket.readLine();
-							System.out.println(timeOutMsg + "\n");
-						}
-						break;
 
-					}
 					outSocket.write(guessString);
 					outSocket.write("\n");
 					outSocket.flush();
 					String response = inSocket.readLine();
-					if (response.equalsIgnoreCase("TIMEOUTCODE")) {
+					if (response.equalsIgnoreCase(Status.TIMEOUT.toString())
+							|| response.equalsIgnoreCase(Status.EXIT.toString())) {
 						String timeOutMsg = inSocket.readLine();
 						System.out.println(timeOutMsg + "\n");
 						break;

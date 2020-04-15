@@ -19,6 +19,7 @@ public class ClientGameHandler extends Thread {
 	private int numClientGuess = 1;
 	boolean playAgain = false;
 	private boolean exitGuess = false;
+	private boolean guessSuccess = false;
 
 	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
@@ -35,7 +36,6 @@ public class ClientGameHandler extends Thread {
 	@Override
 	public void run() {
 		int numGuess = 4;
-		boolean guessSuccess = false;
 		try {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -46,10 +46,16 @@ public class ClientGameHandler extends Thread {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
 				String inClient = in.readLine();
-				if(this.isInterrupted()) {break;}
+				if (this.isInterrupted()) {
+					break;
+				}
 				if (inClient.equalsIgnoreCase("e")) {
 					numClientGuess--;
 					exitGuess = true;
+
+					out.write("EXIT");
+					out.write("\n");
+					out.flush();
 
 					out.write("You exited the game - Please wait for others to finish the game...\n");
 					out.flush();
@@ -122,5 +128,9 @@ public class ClientGameHandler extends Thread {
 
 	public boolean getExitGuess() {
 		return exitGuess;
+	}
+
+	public boolean getGuessSuccess() {
+		return guessSuccess;
 	}
 }
