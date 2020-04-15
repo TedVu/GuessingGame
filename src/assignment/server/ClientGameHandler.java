@@ -11,6 +11,8 @@ import java.net.SocketException;
 import assignment.client.Status;
 
 public class ClientGameHandler extends Thread {
+
+	private static final int MAX_GUESS = 4;
 	private Socket connection;
 	private BufferedWriter out;
 	private BufferedReader in;
@@ -21,6 +23,8 @@ public class ClientGameHandler extends Thread {
 	private boolean exitGuess = false;
 	private boolean guessSuccess = false;
 
+	private int numPlayerInRound = 0;
+
 	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
 	}
@@ -30,20 +34,28 @@ public class ClientGameHandler extends Thread {
 		this.clientName = clientName;
 	}
 
+	public void setNumPlayerInRound(int numPlayer) {
+		this.numPlayerInRound = numPlayer;
+	}
+
 	/*
 	 * (non-Javadoc) To be implement some logic for guessing game here
 	 */
 	@Override
 	public void run() {
-		int numGuess = 4;
+		int numGuess = MAX_GUESS;
 		try {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			out.write("Welcome to guessing game\n");
+			out.flush();
+			out.write("Number of player in this round is: " + numPlayerInRound);
+			out.write("\n");
+			out.flush();
 
 			do {
-				out.write("Please specify your guess number here:\n");
+				out.write("Please specify your guess number here(0-12):\n");
 				out.flush();
 				String inClient = in.readLine();
 				if (this.isInterrupted()) {
@@ -69,11 +81,15 @@ public class ClientGameHandler extends Thread {
 					} else if (guessNum > randomNum) {
 						out.write("Your guess is larger than the generated number\n");
 						out.flush();
-						++numClientGuess;
+						if (numClientGuess != MAX_GUESS) {
+							++numClientGuess;
+						}
 					} else {
 						out.write("Your guess is smaller than the generated number\n");
 						out.flush();
-						++numClientGuess;
+						if (numClientGuess != MAX_GUESS) {
+							++numClientGuess;
+						}
 					}
 					out.flush();
 					--numGuess;
@@ -99,11 +115,24 @@ public class ClientGameHandler extends Thread {
 				}
 			}
 
+//			closeResource();
+
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 
 		} catch (IOException e) {
 		}
+	}
+
+	public void closeResource() {
+		try {
+			out.close();
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	public void setRandomNum(int randomNum) {

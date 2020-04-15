@@ -31,22 +31,33 @@ public class ClientRegistrationHandler implements Runnable {
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			out.write("Guessing game registration\n");
-			out.write("Enter your name:\n");
-			out.flush();
-			String nameClient = in.readLine();
-			// doing some looping validation here
-			clientHandler.setClientName(nameClient);
-			out.write("Please wait for next available round...\n");
-			out.flush();
-			synchronized (queue) {
-				queue.add(clientHandler);
+			while (true) {
+				out.write("Enter your name:\n");
+				out.flush();
+				String nameClient = in.readLine();
+				// doing some looping validation here
+				clientHandler.setClientName(nameClient);
+
+				synchronized (queue) {
+					if (queue.size() < 6) {
+						queue.add(clientHandler);
+						out.write("NOTFULL\n");
+						out.write("Register successful !!! please wait for next available round...\n");
+						out.flush();
+						break;
+					} else {
+						out.write("FULL\n");
+						out.write("The current slot is full please register later...\n");
+						out.flush();
+					}
+				}
 			}
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 	}
 
 }

@@ -2,6 +2,7 @@ package assignment.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -55,9 +56,19 @@ public class RepromptForRegistrationHandler extends Thread {
 					// handling error here
 				}
 			}
+//			closeResource();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 		}
 
+	}
+
+	public void closeResource() {
+		try {
+			in.close();
+			out.close();
+		} catch (IOException e) {
+
+		}
 	}
 }
