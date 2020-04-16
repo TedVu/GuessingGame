@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Queue;
 
+import assignment.client.CommunicationCode;
+
 public class RepromptForRegistrationHandler extends Thread {
 
 	private Queue<ClientGameHandler> queue;
@@ -43,7 +45,9 @@ public class RepromptForRegistrationHandler extends Thread {
 					break;
 
 				} else if (answer.equalsIgnoreCase("q")) {
-
+					out.write(CommunicationCode.QUIT.toString());
+					out.write("\n");
+					out.flush();
 					synchronized (queue) {
 						queue.remove();
 					}
@@ -51,24 +55,21 @@ public class RepromptForRegistrationHandler extends Thread {
 					out.flush();
 					break;
 				} else if (queue.size() == 6) {
+					out.write(CommunicationCode.FULL.toString());
+					out.write("\n");
+					out.flush();
+					out.write("The queue is full at the moment please register later...");
+					out.write("\n");
+					out.flush();
 					continue;
 				} else {
 					// handling error here
 				}
 			}
-//			closeResource();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 		}
 
 	}
 
-	public void closeResource() {
-		try {
-			in.close();
-			out.close();
-		} catch (IOException e) {
-
-		}
-	}
 }

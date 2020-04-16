@@ -1,6 +1,6 @@
 package assignment.client;
 
-public enum Status {
+public enum CommunicationCode {
 
 	SUCCESS {
 
@@ -48,7 +48,49 @@ public enum Status {
 			return "EXIT";
 		}
 
-	};
+	},
+
+	FULL {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "FULL";
+		}
+
+	},
+
+	NOTFULL {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "NOTFULL";
+		}
+
+	},
+
+	QUIT {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "QUIT";
+		}
+
+	},
+
+	PLAYAGAIN {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "PLAYAGAIN";
+		}
+
+	}
+
+	;
 
 	public abstract String toString();
 

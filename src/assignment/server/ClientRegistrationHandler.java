@@ -8,6 +8,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Queue;
 
+import assignment.client.CommunicationCode;
+
 public class ClientRegistrationHandler implements Runnable {
 
 	private Queue<ClientGameHandler> queue;
@@ -41,12 +43,14 @@ public class ClientRegistrationHandler implements Runnable {
 				synchronized (queue) {
 					if (queue.size() < 6) {
 						queue.add(clientHandler);
-						out.write("NOTFULL\n");
+						out.write(CommunicationCode.NOTFULL.toString());
+						out.write("\n");
 						out.write("Register successful !!! please wait for next available round...\n");
 						out.flush();
 						break;
 					} else {
-						out.write("FULL\n");
+						out.write(CommunicationCode.FULL.toString());
+						out.write("\n");
 						out.write("The current slot is full please register later...\n");
 						out.flush();
 					}
@@ -57,7 +61,7 @@ public class ClientRegistrationHandler implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }

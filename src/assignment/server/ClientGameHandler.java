@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
-import assignment.client.Status;
+import assignment.client.CommunicationCode;
 
 public class ClientGameHandler extends Thread {
 
@@ -96,6 +96,7 @@ public class ClientGameHandler extends Thread {
 
 				} catch (NumberFormatException e) {
 					--numGuess;
+					++numClientGuess;
 					out.write("Invalid input\n");
 					out.flush();
 				}
@@ -103,36 +104,23 @@ public class ClientGameHandler extends Thread {
 
 			if (!exitGuess && !this.isInterrupted()) {
 				if (guessSuccess) {
-					out.write(Status.SUCCESS.toString());
+					out.write(CommunicationCode.SUCCESS.toString());
 					out.write("\n");
 					out.write("Congratulations\n");
 					out.flush();
 				} else if (this.isAlive()) {
-					out.write(Status.FAIL.toString());
+					out.write(CommunicationCode.FAIL.toString());
 					out.write("\n");
 					out.write("Game Over - The correct number is: " + randomNum + "\n");
 					out.flush();
 				}
 			}
 
-//			closeResource();
-
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 
 		} catch (IOException e) {
 		}
-	}
-
-	public void closeResource() {
-		try {
-			out.close();
-			in.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	public void setRandomNum(int randomNum) {

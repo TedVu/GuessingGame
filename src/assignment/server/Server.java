@@ -16,13 +16,14 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import assignment.client.Status;
+import assignment.client.CommunicationCode;
 
 public class Server {
 	private static final int PORT = 9090;
-	private static final int MIN = 1;
+	private static final int MIN = 0;
 	private static final int MAX = 12;
 	private static final int MAX_PLAYER_EACH_ROUND = 3;
+	private static final int TIME_PER_ROUND = 20; // in seconds
 
 	private BufferedWriter writer;
 
@@ -56,12 +57,13 @@ public class Server {
 						while (true) {
 							// synching effect when prompting
 							if (initialPrompt) {
-								initialPrompt = false;
 
 								System.out.print("\nEnter START to start game:");
 								Scanner in = new Scanner(System.in);
 								String cmd = in.nextLine();
 								if (cmd.equalsIgnoreCase("START")) {
+									initialPrompt = false;
+
 									if (!onRound && lobbyQueue.size() > 0) {
 										int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
 										System.out.println("\nRandom Number in this round:" + randomNum);
@@ -92,7 +94,7 @@ public class Server {
 											@Override
 											public void run() {
 												try {
-													Thread.sleep(20000);
+													Thread.sleep(TIME_PER_ROUND * 1000);
 													synchronized (endTimer) {
 														endTimer = true;
 													}
@@ -136,7 +138,7 @@ public class Server {
 													try {
 														writer = new BufferedWriter(new OutputStreamWriter(
 																thread.getConnection().getOutputStream()));
-														writer.write(Status.TIMEOUT.toString());
+														writer.write(CommunicationCode.TIMEOUT.toString());
 														writer.write("\n");
 														writer.flush();
 														writer.write("Game Ended due to timeout");
@@ -189,12 +191,12 @@ public class Server {
 											finalResult.append(player.getClientName()).append(" ")
 													.append(player.getNumGuessClient()).append(" ");
 										}
-										finalResult.append("\tLosers: ");
+										finalResult.append("\t|\tLosers: ");
 										for (ClientGameHandler player : losers) {
 											finalResult.append(player.getClientName()).append(" ")
 													.append(player.getNumGuessClient()).append(" ");
 										}
-										finalResult.append("\tNot Finish Game: ");
+										finalResult.append("\t|\tNot Finish Game: ");
 										for (ClientGameHandler player : notFinish) {
 											finalResult.append(player.getClientName()).append(" ");
 										}

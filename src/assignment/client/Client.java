@@ -15,6 +15,7 @@ public class Client {
 	private BufferedWriter outSocket;
 	private BufferedReader inSocket;
 	private Scanner inputClient;
+	private boolean quitGame = false;
 
 	public Client() {
 		try {
@@ -61,13 +62,13 @@ public class Client {
 					outSocket.write("\n");
 					outSocket.flush();
 					String response = inSocket.readLine();
-					if (response.equalsIgnoreCase(Status.TIMEOUT.toString())
-							|| response.equalsIgnoreCase(Status.EXIT.toString())) {
+					if (response.equalsIgnoreCase(CommunicationCode.TIMEOUT.toString())
+							|| response.equalsIgnoreCase(CommunicationCode.EXIT.toString())) {
 						String timeOutMsg = inSocket.readLine();
 						System.out.println(timeOutMsg + "\n");
 						break;
 					}
-					if (response.equalsIgnoreCase(Status.SUCCESS.toString())) {
+					if (response.equalsIgnoreCase(CommunicationCode.SUCCESS.toString())) {
 						String result = inSocket.readLine();
 						System.out.println("\n" + result);
 						break;
@@ -75,7 +76,7 @@ public class Client {
 						System.out.println("\n" + response + "\n");
 
 						command = inSocket.readLine();
-						if (command.equalsIgnoreCase(Status.FAIL.toString())) {
+						if (command.equalsIgnoreCase(CommunicationCode.FAIL.toString())) {
 							String gameOverMsg = inSocket.readLine();
 							System.out.println("\n" + gameOverMsg);
 							break;
@@ -89,16 +90,29 @@ public class Client {
 				System.out.println("\n\t" + finalMsg + "\t");
 				String finalResult = inSocket.readLine();
 				System.out.println("\n" + finalResult);
-				String repromptMsg = inSocket.readLine();
-				System.out.print("\n" + repromptMsg);
-				String answer = inputClient.nextLine();
-				// conduct validation server side here
-				outSocket.write(answer);
-				outSocket.write("\n");
-				outSocket.flush();
-				if (answer.equalsIgnoreCase("q")) {
-					String goodbyeMsg = inSocket.readLine();
-					System.out.println(goodbyeMsg);
+				do {
+					String repromptMsg = inSocket.readLine();
+					System.out.print("\n" + repromptMsg);
+					String answer = inputClient.nextLine();
+					// conduct validation server side here
+					outSocket.write(answer);
+					outSocket.write("\n");
+					outSocket.flush();
+					String serverReplayCode = inSocket.readLine();
+					if (serverReplayCode.equalsIgnoreCase("QUIT")) {
+						String goodbyeMsg = inSocket.readLine();
+						System.out.println(goodbyeMsg);
+						quitGame = true;
+						break;
+					} else if (serverReplayCode.equalsIgnoreCase("FULL")) {
+						String fullNoti = inSocket.readLine();
+						System.out.println(fullNoti);
+
+					} else {
+						break;
+					}
+				} while (true);
+				if (quitGame) {
 					break;
 				}
 			}
