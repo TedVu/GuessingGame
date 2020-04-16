@@ -30,14 +30,17 @@ public class RepromptForRegistrationHandler extends Thread {
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			while (true) {
-				out.write("Do you want to play again ?\n");
+				out.write("Do you want to play again (p-play again | q-quit)?\n");
 				out.flush();
 				String answer = in.readLine();
-				if (answer.equalsIgnoreCase("p") && queue.size() < 6) {
+				if (answer.equalsIgnoreCase("p") && queue.size() <= 6) {
 					synchronized (queue) {
 						queue.remove();
 						queue.add(new ClientGameHandler(connection, client.getClientName()));
 					}
+					out.write(CommunicationCode.NOTFULL.toString());
+					out.write("\n");
+					out.flush();
 					out.write("Waiting for server to announce next available round...\n");
 					out.flush();
 
@@ -53,7 +56,7 @@ public class RepromptForRegistrationHandler extends Thread {
 					out.write("Goodbye\n");
 					out.flush();
 					break;
-				} else if (queue.size() == 6) {
+				} else if (queue.size() > 6) {
 					out.write(CommunicationCode.FULL.toString());
 					out.write("\n");
 					out.flush();
@@ -63,6 +66,11 @@ public class RepromptForRegistrationHandler extends Thread {
 					continue;
 				} else {
 					// handling error here
+					out.write(CommunicationCode.ERROR.toString());
+					out.write("\n");
+					out.flush();
+					out.write("Invalid input please reenter\n");
+					out.flush();
 				}
 			}
 		} catch (Exception e) {

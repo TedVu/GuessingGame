@@ -57,12 +57,12 @@ public class Server {
 						while (true) {
 							// synching effect when prompting
 							if (initialPrompt) {
+								initialPrompt = false;
 
 								System.out.print("\nEnter START to start game:");
 								Scanner in = new Scanner(System.in);
 								String cmd = in.nextLine();
 								if (cmd.equalsIgnoreCase("START")) {
-									initialPrompt = false;
 
 									if (!onRound && lobbyQueue.size() > 0) {
 										int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
@@ -162,8 +162,6 @@ public class Server {
 												} else {
 													losers.add(player);
 												}
-												// finalResult.append(player.getClientName()).append(" ")
-												// .append(player.getNumGuessClient()).append(" ");
 											} else {
 												notFinish.add(player);
 											}

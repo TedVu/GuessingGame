@@ -88,6 +88,15 @@ public enum CommunicationCode {
 			return "PLAYAGAIN";
 		}
 
+	},
+
+	ERROR {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "ERROR";
+		}
 	}
 
 	;

@@ -25,14 +25,26 @@ public class Client {
 			outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String registrationMsg = inSocket.readLine();
-			String nameMsg = inSocket.readLine();
-
 			System.out.println(registrationMsg + "\n");
-			System.out.print(nameMsg);
-			String nameResponse = inputClient.nextLine();
-			outSocket.write(nameResponse);
-			outSocket.write("\n");
-			outSocket.flush();
+
+			while (true) {
+
+				String nameMsg = inSocket.readLine();
+
+				System.out.print(nameMsg);
+				String nameResponse = inputClient.nextLine();
+				outSocket.write(nameResponse);
+				outSocket.write("\n");
+				outSocket.flush();
+				// sending server side
+				String registerCode = inSocket.readLine();
+				if (registerCode.equalsIgnoreCase("NOTFULL")) {
+					break;
+				} else {
+					String registerAgainMsg = inSocket.readLine();
+					System.out.println(registerAgainMsg + "\n");
+				}
+			}
 			// sending server side
 			while (true) {
 				String pendingMsg = inSocket.readLine();
@@ -85,15 +97,18 @@ public class Client {
 					outSocket.write("\n");
 					outSocket.flush();
 					String serverReplayCode = inSocket.readLine();
-					if (serverReplayCode.equalsIgnoreCase("QUIT")) {
+					if (serverReplayCode.equalsIgnoreCase(CommunicationCode.QUIT.toString())) {
 						String goodbyeMsg = inSocket.readLine();
 						System.out.println(goodbyeMsg);
 						quitGame = true;
 						break;
-					} else if (serverReplayCode.equalsIgnoreCase("FULL")) {
+					} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.FULL.toString())) {
 						String fullNoti = inSocket.readLine();
 						System.out.println(fullNoti);
 
+					} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.ERROR.toString())) {
+						String errorNoti = inSocket.readLine();
+						System.out.println(errorNoti+"\n");
 					} else {
 						break;
 					}

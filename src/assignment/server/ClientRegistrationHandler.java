@@ -43,12 +43,14 @@ public class ClientRegistrationHandler implements Runnable {
 				synchronized (queue) {
 					if (queue.size() < 6) {
 						queue.add(clientHandler);
-						
+						out.write(CommunicationCode.NOTFULL.toString());
+						out.write("\n");
 						out.write("Register successful !!! please wait for next available round...\n");
 						out.flush();
 						break;
 					} else {
-					
+						out.write(CommunicationCode.FULL.toString());
+						out.write("\n");
 						out.write("The current slot is full please register later...\n");
 						out.flush();
 					}
