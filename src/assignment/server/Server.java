@@ -81,15 +81,10 @@ public class Server {
 										while (it.hasNext() && numPlayer < MAX_PLAYER_EACH_ROUND) {
 											ClientGameHandler player = it.next();
 											player.setRandomNum(randomNum);
+											player.start();
 											playersInCurrentRound.add(player);
 											numPlayer++;
 										}
-										for (ClientGameHandler player : playersInCurrentRound) {
-											player.setNumPlayerInRound(numPlayer);
-											player.start();
-
-										}
-
 										Thread trackTime = new Thread() {
 											@Override
 											public void run() {

@@ -11,8 +11,6 @@ import java.net.SocketException;
 import assignment.client.CommunicationCode;
 
 public class ClientGameHandler extends Thread {
-
-	private static final int MAX_GUESS = 4;
 	private Socket connection;
 	private BufferedWriter out;
 	private BufferedReader in;
@@ -23,8 +21,6 @@ public class ClientGameHandler extends Thread {
 	private boolean exitGuess = false;
 	private boolean guessSuccess = false;
 
-	private int numPlayerInRound = 0;
-
 	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
 	}
@@ -34,28 +30,20 @@ public class ClientGameHandler extends Thread {
 		this.clientName = clientName;
 	}
 
-	public void setNumPlayerInRound(int numPlayer) {
-		this.numPlayerInRound = numPlayer;
-	}
-
 	/*
 	 * (non-Javadoc) To be implement some logic for guessing game here
 	 */
 	@Override
 	public void run() {
-		int numGuess = MAX_GUESS;
+		int numGuess = 4;
 		try {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
 			out.write("Welcome to guessing game\n");
-			out.flush();
-			out.write("Number of player in this round is: " + numPlayerInRound);
-			out.write("\n");
-			out.flush();
 
 			do {
-				out.write("Please specify your guess number here(0-12):\n");
+				out.write("Please specify your guess number here:\n");
 				out.flush();
 				String inClient = in.readLine();
 				if (this.isInterrupted()) {
@@ -81,15 +69,11 @@ public class ClientGameHandler extends Thread {
 					} else if (guessNum > randomNum) {
 						out.write("Your guess is larger than the generated number\n");
 						out.flush();
-						if (numClientGuess != MAX_GUESS) {
-							++numClientGuess;
-						}
+						++numClientGuess;
 					} else {
 						out.write("Your guess is smaller than the generated number\n");
 						out.flush();
-						if (numClientGuess != MAX_GUESS) {
-							++numClientGuess;
-						}
+						++numClientGuess;
 					}
 					out.flush();
 					--numGuess;
