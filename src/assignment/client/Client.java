@@ -50,8 +50,11 @@ public class Client {
 				String pendingMsg = inSocket.readLine();
 				System.out.println("\n" + pendingMsg + "\n");
 				String welcomeMsg = inSocket.readLine();
+				String participantsMsg = inSocket.readLine();
+
 				String command = inSocket.readLine();
-				System.out.println("\t" + welcomeMsg + "\n");
+				System.out.println("\t" + welcomeMsg);
+				System.out.println(participantsMsg + "\n");
 				System.out.print(command + " ");
 				do {
 					String guessString = inputClient.nextLine();
@@ -108,7 +111,7 @@ public class Client {
 
 					} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.ERROR.toString())) {
 						String errorNoti = inSocket.readLine();
-						System.out.println(errorNoti+"\n");
+						System.out.println(errorNoti + "\n");
 					} else {
 						break;
 					}

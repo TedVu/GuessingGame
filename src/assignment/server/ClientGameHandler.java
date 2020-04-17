@@ -20,6 +20,10 @@ public class ClientGameHandler extends Thread {
 	boolean playAgain = false;
 	private boolean exitGuess = false;
 	private boolean guessSuccess = false;
+	private String nameParticipants = "";
+	private int roundNumber = 0;
+
+	private int numPlayerInRound = 0;
 
 	public ClientGameHandler(Socket connection) {
 		this.connection = connection;
@@ -40,8 +44,12 @@ public class ClientGameHandler extends Thread {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-			out.write("Welcome to guessing game\n");
-
+			out.write("Welcome to guessing game round " + roundNumber);
+			out.write("\n");
+			out.flush();
+			out.write("There are " + numPlayerInRound + " participants in this round:" + nameParticipants);
+			out.write("\n");
+			out.flush();
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
@@ -113,6 +121,18 @@ public class ClientGameHandler extends Thread {
 
 	public void setClientName(String clientName) {
 		this.clientName = clientName;
+	}
+
+	public void setNumPlayerRound(int numPlayerInRound) {
+		this.numPlayerInRound = numPlayerInRound;
+	}
+
+	public void setNameParticipants(String nameParticipants) {
+		this.nameParticipants = nameParticipants;
+	}
+
+	public void setRoundNum(int roundNumber) {
+		this.roundNumber = roundNumber;
 	}
 
 	public Socket getConnection() {

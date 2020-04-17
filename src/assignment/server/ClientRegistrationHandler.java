@@ -41,7 +41,7 @@ public class ClientRegistrationHandler implements Runnable {
 				clientHandler.setClientName(nameClient);
 
 				synchronized (queue) {
-					if (queue.size() < 6) {
+					if (queue.size() < Server.MAX_PLAYER_QUEUE) {
 						queue.add(clientHandler);
 						out.write(CommunicationCode.NOTFULL.toString());
 						out.write("\n");

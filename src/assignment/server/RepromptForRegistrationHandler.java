@@ -33,7 +33,7 @@ public class RepromptForRegistrationHandler extends Thread {
 				out.write("Do you want to play again (p-play again | q-quit)?\n");
 				out.flush();
 				String answer = in.readLine();
-				if (answer.equalsIgnoreCase("p") && queue.size() <= 6) {
+				if (answer.equalsIgnoreCase("p") && queue.size() <= Server.MAX_PLAYER_QUEUE) {
 					synchronized (queue) {
 						queue.remove();
 						queue.add(new ClientGameHandler(connection, client.getClientName()));
@@ -56,7 +56,7 @@ public class RepromptForRegistrationHandler extends Thread {
 					out.write("Goodbye\n");
 					out.flush();
 					break;
-				} else if (queue.size() > 6) {
+				} else if (queue.size() > Server.MAX_PLAYER_QUEUE) {
 					out.write(CommunicationCode.FULL.toString());
 					out.write("\n");
 					out.flush();
