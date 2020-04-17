@@ -57,6 +57,7 @@ public class Client {
 				System.out.println(participantsMsg + "\n");
 				System.out.print(command + " ");
 				do {
+					// timer to auto read result after a certain amount of time
 					String guessString = inputClient.nextLine();
 
 					outSocket.write(guessString);

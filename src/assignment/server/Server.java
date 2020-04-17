@@ -1,29 +1,17 @@
 package assignment.server;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
-
-import assignment.client.CommunicationCode;
 
 public class Server {
 	public static final int PORT = 9090;
 	public static final int MIN_GUESS = 0;
 	public static final int MAX_GUESS = 12;
 	public static final int MAX_PLAYER_EACH_ROUND = 3;
-	public static final int TIME_PER_ROUND = 20; // in seconds
+	public static final int TIME_PER_ROUND = 7; // in seconds
 	public static final int MAX_PLAYER_QUEUE = 6;
 
 	private Socket connection;
