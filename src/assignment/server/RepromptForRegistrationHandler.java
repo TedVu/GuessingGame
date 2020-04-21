@@ -6,10 +6,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Queue;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
 public class RepromptForRegistrationHandler extends Thread {
+
+	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
 
 	private Queue<ClientGameHandler> queue;
 	private Socket connection;
@@ -25,6 +30,7 @@ public class RepromptForRegistrationHandler extends Thread {
 
 	@Override
 	public void run() {
+
 		connection = client.getConnection();
 		try {
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
@@ -32,7 +38,11 @@ public class RepromptForRegistrationHandler extends Thread {
 			while (true) {
 				out.write("Do you want to play again (p-play again | q-quit)?\n");
 				out.flush();
+
+				// some form of timer implement here
+				// if not receive any response for an amount of time kill this thread
 				String answer = in.readLine();
+
 				if (answer.equalsIgnoreCase("p") && queue.size() <= Server.MAX_PLAYER_QUEUE) {
 					synchronized (queue) {
 						queue.remove();
@@ -47,6 +57,9 @@ public class RepromptForRegistrationHandler extends Thread {
 					break;
 
 				} else if (answer.equalsIgnoreCase("q")) {
+					logger.log(Level.INFO,
+							"COMMUNICATION LOG: " + connection.getRemoteSocketAddress() + " DISCONNECT TO SERVER");
+
 					out.write(CommunicationCode.QUIT.toString());
 					out.write("\n");
 					out.flush();

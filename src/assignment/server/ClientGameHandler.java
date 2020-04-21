@@ -7,14 +7,20 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
 public class ClientGameHandler extends Thread {
+
+	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
+
 	private Socket connection;
 	private BufferedWriter out;
 	private BufferedReader in;
 	private int randomNum;
+
 	private String clientName;
 	private int numClientGuess = 1;
 	boolean playAgain = false;
@@ -39,7 +45,8 @@ public class ClientGameHandler extends Thread {
 	 */
 	@Override
 	public void run() {
-		int numGuess = 4;
+
+		int numGuess = Server.MAX_NUM_GUESS;
 		try {
 
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -50,14 +57,19 @@ public class ClientGameHandler extends Thread {
 			out.write("There are " + numPlayerInRound + " participants in this round:" + nameParticipants);
 			out.write("\n");
 			out.flush();
+
+			logger.log(Level.INFO,
+					"GAMING LOG: " + numPlayerInRound + " PARTICIPANTS IN THIS ROUND:" + nameParticipants);
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
 				String inClient = in.readLine();
+
 				if (this.isInterrupted()) {
 					break;
 				}
 				if (inClient.equalsIgnoreCase("e")) {
+					logger.log(Level.INFO, "GAMING LOG: " + clientName + " EXITED GAME");
 					numClientGuess--;
 					exitGuess = true;
 
@@ -71,6 +83,10 @@ public class ClientGameHandler extends Thread {
 				}
 				try {
 					int guessNum = Integer.parseInt(inClient);
+					synchronized (logger) {
+						logger.log(Level.INFO, "GAMING LOG: " + clientName + " GUESS " + guessNum);
+					}
+
 					if (guessNum == randomNum) {
 						guessSuccess = true;
 						break;
@@ -87,6 +103,7 @@ public class ClientGameHandler extends Thread {
 					--numGuess;
 
 				} catch (NumberFormatException e) {
+					logger.log(Level.INFO, "GAMING LOG: " + clientName + " ENTERS INVALID INPUT");
 					--numGuess;
 					++numClientGuess;
 					out.write("Invalid input\n");

@@ -13,10 +13,14 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
 public class StartGameThread extends Thread {
+
+	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
 
 	private BufferedWriter writer;
 	private Queue<ClientGameHandler> lobbyQueue;
@@ -54,12 +58,11 @@ public class StartGameThread extends Thread {
 				if (cmd.equalsIgnoreCase("START")) {
 
 					if (!onRound && lobbyQueue.size() > 0) {
+						logger.log(Level.INFO, "GAMING LOG: " + "ROUND " + round + " START");
 
 						// produce a random number
 						int randomNum = ThreadLocalRandom.current().nextInt(Server.MIN_GUESS, Server.MAX_GUESS);
-
-						System.out.println("\nRandom Number in this round:" + randomNum);
-
+						logger.log(Level.INFO, "GAMING LOG: " + "RANDOM NUMBER: " + randomNum);
 						// 3 are playing, 3 are waiting => there cannot be concurrent round play
 						// wait for next available round
 						// locking to alter global variable
@@ -101,11 +104,14 @@ public class StartGameThread extends Thread {
 						startRepromptThread(playersInCurrentRound, repromptThreads);
 						trackingRepromptThread(repromptThreads);
 
+						logger.log(Level.INFO, "GAMING LOG: " + "ROUND " + round + " FINISHED");
+
 						synchronized (onRound) {
 							mainServer.setRoundNum(++round);
 							mainServer.setOnRound(false);
 						}
 						mainServer.setInitialPrompt(true);
+
 					} else {
 						// initialPrompt = true;
 						mainServer.setInitialPrompt(true);
@@ -118,6 +124,7 @@ public class StartGameThread extends Thread {
 				break;
 			}
 		}
+
 	}
 
 	private void trackingRepromptThread(Set<RepromptForRegistrationHandler> repromptThreads) {
@@ -146,6 +153,7 @@ public class StartGameThread extends Thread {
 	private void writeFinalResult(Set<Socket> playerSockets, StringBuilder finalResult) {
 		for (Socket playerSocket : playerSockets) {
 			try {
+
 				writer = new BufferedWriter(new OutputStreamWriter(playerSocket.getOutputStream()));
 				writer.write("Final result of round " + round + "\n");
 				writer.flush();
@@ -218,7 +226,7 @@ public class StartGameThread extends Thread {
 						writer.write("Game Ended due to timeout");
 						writer.write("\n");
 						writer.flush();
-
+						logger.log(Level.INFO, "NOT FINISHED GAME BEFORE TIMER");
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -256,12 +264,10 @@ public class StartGameThread extends Thread {
 					endTimer = true;
 
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					System.out.println("All players in this round has finished gameplay before the timer goes off");
+					logger.log(Level.INFO, "GAMING LOG: " + "ALL FINISHED GAME BEFORE TIMER");
 					try {
 						this.finalize();
 					} catch (Throwable e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 
@@ -275,7 +281,6 @@ public class StartGameThread extends Thread {
 	private void startPlayingGameThread(Set<ClientGameHandler> playersInCurrentRound, StringBuilder participantsName) {
 		for (ClientGameHandler player : playersInCurrentRound) {
 			player.setNameParticipants(participantsName.toString());
-
 			player.start();
 		}
 	}

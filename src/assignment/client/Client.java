@@ -11,11 +11,15 @@ public class Client {
 
 	private static final int PORT = 9090;
 	private static final String HOST = "localhost";
+
+	private int waitTime = 22;
+
 	private Socket socket;
 	private BufferedWriter outSocket;
 	private BufferedReader inSocket;
 	private Scanner inputClient;
 	private boolean quitGame = false;
+	private String guessString;
 
 	public Client() {
 		try {
@@ -33,10 +37,11 @@ public class Client {
 
 				System.out.print(nameMsg);
 				String nameResponse = inputClient.nextLine();
+
 				outSocket.write(nameResponse);
 				outSocket.write("\n");
 				outSocket.flush();
-				// sending server side
+
 				String registerCode = inSocket.readLine();
 				if (registerCode.equalsIgnoreCase("NOTFULL")) {
 					break;
@@ -56,14 +61,33 @@ public class Client {
 				System.out.println("\t" + welcomeMsg);
 				System.out.println(participantsMsg + "\n");
 				System.out.print(command + " ");
+				waitTime = 22;
 				do {
-					// timer to auto read result after a certain amount of time
-					String guessString = inputClient.nextLine();
+
+					// guessString = inputClient.nextLine();
+					long trackTime = 0;
+					BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+					long startTime = System.currentTimeMillis();
+					while ((trackTime = System.currentTimeMillis() - startTime) <= waitTime * 1000 && !in.ready()) {
+
+					}
+
+					if (in.ready()) {
+						guessString = in.readLine();
+						waitTime -= trackTime / 1000;
+					} else {
+						guessString = "";
+						System.out
+								.print("\n\nRound timer goes off, no guess will be recorded\nHit enter to continue: ");
+						inputClient.nextLine();
+						System.out.println("");// print newline here to format result msg
+					}
 
 					outSocket.write(guessString);
 					outSocket.write("\n");
 					outSocket.flush();
 					String response = inSocket.readLine();
+
 					if (response.equalsIgnoreCase(CommunicationCode.TIMEOUT.toString())
 							|| response.equalsIgnoreCase(CommunicationCode.EXIT.toString())) {
 						String timeOutMsg = inSocket.readLine();
@@ -95,6 +119,7 @@ public class Client {
 				do {
 					String repromptMsg = inSocket.readLine();
 					System.out.print("\n" + repromptMsg);
+
 					String answer = inputClient.nextLine();
 					// conduct validation server side here
 					outSocket.write(answer);
@@ -123,6 +148,7 @@ public class Client {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 	}
