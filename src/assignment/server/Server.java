@@ -6,8 +6,9 @@ import java.net.Socket;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Server {
+	public static final int MAX_NUM_GUESS = 4;
 	private static final int PORT = 9090;
-	private static final int MIN = 1;
+	private static final int MIN = 0;
 	private static final int MAX = 12;
 	private Socket connection;
 
@@ -21,7 +22,7 @@ public class Server {
 			while (true) {
 				int randomNum = ThreadLocalRandom.current().nextInt(MIN, MAX);
 				connection = server.accept();
-				ClientHandler clientHandler = new ClientHandler(connection,randomNum);
+				ClientHandler clientHandler = new ClientHandler(connection, randomNum);
 				clientHandler.run();
 
 			}

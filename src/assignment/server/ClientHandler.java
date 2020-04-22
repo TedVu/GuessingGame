@@ -9,7 +9,14 @@ import java.net.Socket;
 
 import assignment.client.Status;
 
+/**
+ * @author Vu Duy Anh Tuan
+ * 
+ *         Representing a Thread to handle client request
+ *
+ */
 public class ClientHandler extends Thread {
+
 	private Socket connection;
 	private BufferedWriter out;
 	private BufferedReader in;
@@ -21,19 +28,21 @@ public class ClientHandler extends Thread {
 	}
 
 	/*
-	 * (non-Javadoc) To be implement some logic for guessing game here
+	 * Guessing game logic implemented inside run()
 	 */
 	@Override
 	public void run() {
-		int numGuess = 4;
+		int numGuess = Server.MAX_NUM_GUESS;
 		boolean guessSuccess = false;
 		try {
-
+			// use reader and writer to handle string instead of byte
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+
 			System.out.println("Random Number in this round:" + randomNum);
 			out.write("Welcome to guessing game\n");
 
+			// playing game in a loop with numGuess to keep track of number of guess
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
@@ -45,7 +54,6 @@ public class ClientHandler extends Thread {
 						break;
 					} else if (guessNum > randomNum) {
 						out.write("Your guess is larger than the generated number\n");
-
 						out.flush();
 					} else {
 						out.write("Your guess is smaller than the generated number\n");
@@ -55,12 +63,14 @@ public class ClientHandler extends Thread {
 					--numGuess;
 
 				} catch (NumberFormatException e) {
+					// help handle invalid input
 					--numGuess;
 					out.write("Invalid input\n");
 					out.flush();
 				}
 			} while (numGuess >= 1);
 
+			// sending Communication Code to Client
 			if (guessSuccess) {
 				out.write(Status.SUCCESS.toString());
 				out.write("\n");
@@ -74,8 +84,27 @@ public class ClientHandler extends Thread {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
+		} finally {
+			// avoid leaking resource
+			closeResource();
+		}
+	}
+
+	public void closeResource() {
+		try {
+			if (in != null) {
+				in.close();
+			}
+			if (out != null) {
+				out.close();
+			}
+			if (connection != null) {
+				connection.close();
+			}
+		} catch (IOException e) {
+
 		}
 	}
 }
