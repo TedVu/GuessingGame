@@ -2,11 +2,12 @@ package assignment.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Queue;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,7 +15,7 @@ import assignment.client.CommunicationCode;
 
 public class RepromptForRegistrationHandler extends Thread {
 
-	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
+	private static final Logger logger = Logger.getLogger(Server.class.getName());
 
 	private Queue<ClientGameHandler> queue;
 	private Socket connection;
@@ -41,8 +42,12 @@ public class RepromptForRegistrationHandler extends Thread {
 
 				// some form of timer implement here
 				// if not receive any response for an amount of time kill this thread
-				String answer = in.readLine();
-
+				String answer = null;
+				try {
+					answer = in.readLine();
+				} catch (SocketException e) {
+					System.out.println("DEBUG");
+				}
 				if (answer.equalsIgnoreCase("p") && queue.size() <= Server.MAX_PLAYER_QUEUE) {
 					synchronized (queue) {
 						queue.remove();
@@ -57,8 +62,7 @@ public class RepromptForRegistrationHandler extends Thread {
 					break;
 
 				} else if (answer.equalsIgnoreCase("q")) {
-					logger.log(Level.INFO,
-							"COMMUNICATION LOG: " + connection.getRemoteSocketAddress() + " DISCONNECT TO SERVER");
+					logger.log(Level.INFO, connection.getRemoteSocketAddress() + " DISCONNECT TO SERVER");
 
 					out.write(CommunicationCode.QUIT.toString());
 					out.write("\n");
@@ -86,7 +90,7 @@ public class RepromptForRegistrationHandler extends Thread {
 					out.flush();
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 		}
 

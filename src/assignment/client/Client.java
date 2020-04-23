@@ -24,13 +24,13 @@ public class Client {
 	public Client() {
 		try {
 			socket = new Socket(HOST, PORT);
+
 			inputClient = new Scanner(System.in);
 
 			outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String registrationMsg = inSocket.readLine();
 			System.out.println(registrationMsg + "\n");
-
 			while (true) {
 
 				String nameMsg = inSocket.readLine();
@@ -121,7 +121,7 @@ public class Client {
 					System.out.print("\n" + repromptMsg);
 
 					String answer = inputClient.nextLine();
-					// conduct validation server side here
+
 					outSocket.write(answer);
 					outSocket.write("\n");
 					outSocket.flush();
@@ -143,6 +143,9 @@ public class Client {
 					}
 				} while (true);
 				if (quitGame) {
+					socket.close();
+					inSocket.close();
+					outSocket.close();
 					break;
 				}
 			}

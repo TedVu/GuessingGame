@@ -59,7 +59,7 @@ public class ClientGameHandler extends Thread {
 			out.flush();
 
 			logger.log(Level.INFO,
-					"GAMING LOG: " + numPlayerInRound + " PARTICIPANTS IN THIS ROUND:" + nameParticipants);
+					numPlayerInRound + " PARTICIPANTS IN THIS ROUND:" + nameParticipants);
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
@@ -69,7 +69,7 @@ public class ClientGameHandler extends Thread {
 					break;
 				}
 				if (inClient.equalsIgnoreCase("e")) {
-					logger.log(Level.INFO, "GAMING LOG: " + clientName + " EXITED GAME");
+					logger.log(Level.INFO,clientName + " EXITED GAME");
 					numClientGuess--;
 					exitGuess = true;
 
@@ -84,7 +84,7 @@ public class ClientGameHandler extends Thread {
 				try {
 					int guessNum = Integer.parseInt(inClient);
 					synchronized (logger) {
-						logger.log(Level.INFO, "GAMING LOG: " + clientName + " GUESS " + guessNum);
+						logger.log(Level.INFO,clientName + " GUESS " + guessNum);
 					}
 
 					if (guessNum == randomNum) {
@@ -103,7 +103,7 @@ public class ClientGameHandler extends Thread {
 					--numGuess;
 
 				} catch (NumberFormatException e) {
-					logger.log(Level.INFO, "GAMING LOG: " + clientName + " ENTERS INVALID INPUT");
+					logger.log(Level.INFO,  clientName + " ENTERS INVALID INPUT");
 					--numGuess;
 					++numClientGuess;
 					out.write("Invalid input\n");

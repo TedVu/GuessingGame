@@ -12,7 +12,7 @@ import java.util.logging.SimpleFormatter;
 
 public class Server {
 
-	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
+	private static final Logger logger = Logger.getLogger(Server.class.getName());
 	private FileHandler fileHandler;
 
 	public static final int PORT = 9090;
@@ -33,10 +33,11 @@ public class Server {
 
 	public Server() {
 		try {
-			fileHandler = new FileHandler("ProgramLogs.log");
+			fileHandler = new FileHandler("CommunicationLogs.log");
 			logger.addHandler(fileHandler);
 			SimpleFormatter formatter = new SimpleFormatter();
 			fileHandler.setFormatter(formatter);
+			logger.setUseParentHandlers(false);
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -55,8 +56,7 @@ public class Server {
 				onRound = false;
 
 				connection = server.accept();
-				logger.log(Level.INFO,
-						"COMMUNICATION LOG: " + connection.getRemoteSocketAddress() + " CONNECT TO SERVER");
+				logger.log(Level.INFO, connection.getRemoteSocketAddress() + " CONNECT TO SERVER");
 				ClientGameHandler clientHandler = new ClientGameHandler(connection);
 				Thread regThread = new Thread(new ClientRegistrationHandler(lobbyQueue, clientHandler, connection));
 				regThread.start();

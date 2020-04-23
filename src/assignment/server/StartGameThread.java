@@ -13,14 +13,17 @@ import java.util.Queue;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import assignment.client.CommunicationCode;
 
 public class StartGameThread extends Thread {
 
 	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
+	private FileHandler fileHandler;
 
 	private BufferedWriter writer;
 	private Queue<ClientGameHandler> lobbyQueue;
@@ -37,6 +40,17 @@ public class StartGameThread extends Thread {
 	}
 
 	public synchronized void run() {
+		try {
+			fileHandler = new FileHandler("GammingLogs.log");
+			logger.addHandler(fileHandler);
+			SimpleFormatter formatter = new SimpleFormatter();
+			fileHandler.setFormatter(formatter);
+			logger.setUseParentHandlers(false);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		lobbyQueue = mainServer.getQueue();
 		round = mainServer.getRoundNum();
@@ -58,11 +72,11 @@ public class StartGameThread extends Thread {
 				if (cmd.equalsIgnoreCase("START")) {
 
 					if (!onRound && lobbyQueue.size() > 0) {
-						logger.log(Level.INFO, "GAMING LOG: " + "ROUND " + round + " START");
+						logger.log(Level.INFO, "ROUND " + round + " START");
 
 						// produce a random number
 						int randomNum = ThreadLocalRandom.current().nextInt(Server.MIN_GUESS, Server.MAX_GUESS);
-						logger.log(Level.INFO, "GAMING LOG: " + "RANDOM NUMBER: " + randomNum);
+						logger.log(Level.INFO, "RANDOM NUMBER: " + randomNum);
 						// 3 are playing, 3 are waiting => there cannot be concurrent round play
 						// wait for next available round
 						// locking to alter global variable
@@ -104,7 +118,7 @@ public class StartGameThread extends Thread {
 						startRepromptThread(playersInCurrentRound, repromptThreads);
 						trackingRepromptThread(repromptThreads);
 
-						logger.log(Level.INFO, "GAMING LOG: " + "ROUND " + round + " FINISHED");
+						logger.log(Level.INFO, "ROUND " + round + " FINISHED");
 
 						synchronized (onRound) {
 							mainServer.setRoundNum(++round);
@@ -264,7 +278,7 @@ public class StartGameThread extends Thread {
 					endTimer = true;
 
 				} catch (InterruptedException e) {
-					logger.log(Level.INFO, "GAMING LOG: " + "ALL FINISHED GAME BEFORE TIMER");
+					logger.log(Level.INFO, "ALL FINISHED GAME BEFORE TIMER");
 					try {
 						this.finalize();
 					} catch (Throwable e1) {
