@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,12 +42,9 @@ public class RepromptForRegistrationHandler extends Thread {
 				// some form of timer implement here
 				// if not receive any response for an amount of time kill this thread
 				String answer = null;
-				try {
-					answer = in.readLine();
-				} catch (SocketException e) {
-					System.out.println("DEBUG");
-				}
-				if (answer.equalsIgnoreCase("p") && queue.size() <= Server.MAX_PLAYER_QUEUE) {
+				answer = in.readLine();
+
+				if (answer != null && answer.equalsIgnoreCase("p") && queue.size() <= Server.MAX_PLAYER_QUEUE) {
 					synchronized (queue) {
 						queue.remove();
 						queue.add(new ClientGameHandler(connection, client.getClientName()));
@@ -91,7 +87,7 @@ public class RepromptForRegistrationHandler extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 		}
 
 	}

@@ -15,7 +15,7 @@ public class Server {
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
 	private FileHandler fileHandler;
 
-	public static final int PORT = 9090;
+	public static final int PORT = 9090; // your allocated port
 	public static final int MIN_GUESS = 0;
 	public static final int MAX_GUESS = 12;
 	public static final int MAX_PLAYER_EACH_ROUND = 3;
@@ -30,6 +30,7 @@ public class Server {
 	private Boolean endTimer = false;
 
 	private Boolean initialPrompt = true;
+	private boolean startGameThreadExist = false;
 
 	public Server() {
 		try {
@@ -68,7 +69,6 @@ public class Server {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 		}
 	}
 
@@ -92,8 +92,12 @@ public class Server {
 		return initialPrompt;
 	}
 
-	public FileHandler getFileHandler() {
-		return fileHandler;
+	public boolean getStartGameThreadExist() {
+		return startGameThreadExist;
+	}
+
+	public void setStartGameThreadExist() {
+		startGameThreadExist = true;
 	}
 
 	public void setRoundNum(int round) {

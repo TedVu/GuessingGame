@@ -40,9 +40,6 @@ public class ClientGameHandler extends Thread {
 		this.clientName = clientName;
 	}
 
-	/*
-	 * (non-Javadoc) To be implement some logic for guessing game here
-	 */
 	@Override
 	public void run() {
 
@@ -58,8 +55,6 @@ public class ClientGameHandler extends Thread {
 			out.write("\n");
 			out.flush();
 
-			logger.log(Level.INFO,
-					numPlayerInRound + " PARTICIPANTS IN THIS ROUND:" + nameParticipants);
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
@@ -69,7 +64,7 @@ public class ClientGameHandler extends Thread {
 					break;
 				}
 				if (inClient.equalsIgnoreCase("e")) {
-					logger.log(Level.INFO,clientName + " EXITED GAME");
+					logger.log(Level.INFO, clientName + " EXITED GAME");
 					numClientGuess--;
 					exitGuess = true;
 
@@ -84,7 +79,7 @@ public class ClientGameHandler extends Thread {
 				try {
 					int guessNum = Integer.parseInt(inClient);
 					synchronized (logger) {
-						logger.log(Level.INFO,clientName + " GUESS " + guessNum);
+						logger.log(Level.INFO, clientName + " GUESS " + guessNum);
 					}
 
 					if (guessNum == randomNum) {
@@ -103,7 +98,7 @@ public class ClientGameHandler extends Thread {
 					--numGuess;
 
 				} catch (NumberFormatException e) {
-					logger.log(Level.INFO,  clientName + " ENTERS INVALID INPUT");
+					logger.log(Level.INFO, clientName + " ENTERS INVALID INPUT");
 					--numGuess;
 					++numClientGuess;
 					out.write("Invalid input\n");
@@ -126,9 +121,9 @@ public class ClientGameHandler extends Thread {
 			}
 
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-
+			System.out.println(e.getMessage());
 		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
 	}
 

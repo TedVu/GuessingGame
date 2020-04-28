@@ -40,16 +40,21 @@ public class StartGameThread extends Thread {
 	}
 
 	public synchronized void run() {
-		try {
-			fileHandler = new FileHandler("GammingLogs.log");
-			logger.addHandler(fileHandler);
-			SimpleFormatter formatter = new SimpleFormatter();
-			fileHandler.setFormatter(formatter);
+		if (!mainServer.getStartGameThreadExist()) {
+			try {
+				fileHandler = new FileHandler("GammingLogs.log");
+				logger.addHandler(fileHandler);
+				SimpleFormatter formatter = new SimpleFormatter();
+				fileHandler.setFormatter(formatter);
+				logger.setUseParentHandlers(false);
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			mainServer.setStartGameThreadExist();
+		}else {
 			logger.setUseParentHandlers(false);
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 
 		lobbyQueue = mainServer.getQueue();
@@ -88,7 +93,7 @@ public class StartGameThread extends Thread {
 						int numPlayer = addPlayerToCurrentRound(randomNum, playersInCurrentRound);
 
 						StringBuilder participantsName = getAllParticipantsName(playersInCurrentRound, numPlayer);
-
+						logger.log(Level.INFO, numPlayer + " PARTICIPANTS IN THIS ROUND:" + participantsName);
 						startPlayingGameThread(playersInCurrentRound, participantsName);
 
 						Thread trackTime = startTrackingTimerThread();

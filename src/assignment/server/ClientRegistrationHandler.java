@@ -48,7 +48,6 @@ public class ClientRegistrationHandler implements Runnable {
 						out.write("\n");
 						out.write("Register successful !!! please wait for next available round...\n");
 						out.flush();
-						logger.setUseParentHandlers(false);
 						logger.log(Level.INFO, nameClient + " REGISTER SUCCESSFUL");
 						break;
 					} else {

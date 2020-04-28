@@ -2,6 +2,7 @@ package assignment.client;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
@@ -12,7 +13,7 @@ public class Client {
 	private static final int PORT = 9090;
 	private static final String HOST = "localhost";
 
-	private int waitTime = 22;
+	private static final int WAIT_TIME = 22;
 
 	private Socket socket;
 	private BufferedWriter outSocket;
@@ -31,26 +32,8 @@ public class Client {
 			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			String registrationMsg = inSocket.readLine();
 			System.out.println(registrationMsg + "\n");
-			while (true) {
+			registerClient();
 
-				String nameMsg = inSocket.readLine();
-
-				System.out.print(nameMsg);
-				String nameResponse = inputClient.nextLine();
-
-				outSocket.write(nameResponse);
-				outSocket.write("\n");
-				outSocket.flush();
-
-				String registerCode = inSocket.readLine();
-				if (registerCode.equalsIgnoreCase("NOTFULL")) {
-					break;
-				} else {
-					String registerAgainMsg = inSocket.readLine();
-					System.out.println(registerAgainMsg + "\n");
-				}
-			}
-			// sending server side
 			while (true) {
 				String pendingMsg = inSocket.readLine();
 				System.out.println("\n" + pendingMsg + "\n");
@@ -61,19 +44,19 @@ public class Client {
 				System.out.println("\t" + welcomeMsg);
 				System.out.println(participantsMsg + "\n");
 				System.out.print(command + " ");
-				waitTime = 22;
+				int waitTime = WAIT_TIME;
 				do {
 
-					// guessString = inputClient.nextLine();
 					long trackTime = 0;
-					BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+					BufferedReader inputRandomNum = new BufferedReader(new InputStreamReader(System.in));
 					long startTime = System.currentTimeMillis();
-					while ((trackTime = System.currentTimeMillis() - startTime) <= waitTime * 1000 && !in.ready()) {
+					while ((trackTime = System.currentTimeMillis() - startTime) <= waitTime * 1000
+							&& !inputRandomNum.ready()) {
 
 					}
 
-					if (in.ready()) {
-						guessString = in.readLine();
+					if (inputRandomNum.ready()) {
+						guessString = inputRandomNum.readLine();
 						waitTime -= trackTime / 1000;
 					} else {
 						guessString = "";
@@ -116,43 +99,89 @@ public class Client {
 				System.out.println("\n\t" + finalMsg + "\t");
 				String finalResult = inSocket.readLine();
 				System.out.println("\n" + finalResult);
-				do {
-					String repromptMsg = inSocket.readLine();
-					System.out.print("\n" + repromptMsg);
-
-					String answer = inputClient.nextLine();
-
-					outSocket.write(answer);
-					outSocket.write("\n");
-					outSocket.flush();
-					String serverReplayCode = inSocket.readLine();
-					if (serverReplayCode.equalsIgnoreCase(CommunicationCode.QUIT.toString())) {
-						String goodbyeMsg = inSocket.readLine();
-						System.out.println(goodbyeMsg);
-						quitGame = true;
-						break;
-					} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.FULL.toString())) {
-						String fullNoti = inSocket.readLine();
-						System.out.println(fullNoti);
-
-					} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.ERROR.toString())) {
-						String errorNoti = inSocket.readLine();
-						System.out.println(errorNoti + "\n");
-					} else {
-						break;
-					}
-				} while (true);
+				
+				waitTime = WAIT_TIME;
+				repromptPlayAgain(waitTime);
+				// releasing all the resource when shutting down
 				if (quitGame) {
 					socket.close();
 					inSocket.close();
 					outSocket.close();
 					break;
 				}
+
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void repromptPlayAgain(int waitTime) throws IOException {
+		do {
+			String repromptMsg = inSocket.readLine();
+			System.out.print("\n" + repromptMsg);
+
+			BufferedReader inputReprompt = new BufferedReader(new InputStreamReader(System.in));
+			long startTime = System.currentTimeMillis();
+			while ((System.currentTimeMillis() - startTime) <= waitTime * 1000 && !inputReprompt.ready()) {
+
+			}
+			if (inputReprompt.ready()) {
+				String answer = inputClient.nextLine();
+
+				outSocket.write(answer);
+				outSocket.write("\n");
+				outSocket.flush();
+				String serverReplayCode = inSocket.readLine();
+				if (serverReplayCode.equalsIgnoreCase(CommunicationCode.QUIT.toString())) {
+					String goodbyeMsg = inSocket.readLine();
+					System.out.println(goodbyeMsg);
+					quitGame = true;
+					break;
+				} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.FULL.toString())) {
+					String fullNoti = inSocket.readLine();
+					System.out.println(fullNoti);
+
+				} else if (serverReplayCode.equalsIgnoreCase(CommunicationCode.ERROR.toString())) {
+					String errorNoti = inSocket.readLine();
+					System.out.println(errorNoti + "\n");
+				} else {
+					break;
+				}
+			} else {
+				outSocket.write("q");
+				outSocket.write("\n");
+				outSocket.flush();
+				inSocket.readLine();
+				String goodbyeMsg = inSocket.readLine();
+				System.out.println("\n" + goodbyeMsg);
+				quitGame = true;
+				break;
+			}
+		} while (true);
+	}
+
+	private void registerClient() throws IOException {
+		while (true) {
+
+			String nameMsg = inSocket.readLine();
+
+			System.out.print(nameMsg);
+			String nameResponse = inputClient.nextLine();
+
+			outSocket.write(nameResponse);
+			outSocket.write("\n");
+			outSocket.flush();
+
+			String registerCode = inSocket.readLine();
+			if (registerCode.equalsIgnoreCase("NOTFULL")) {
+				break;
+			} else {
+				String registerAgainMsg = inSocket.readLine();
+				System.out.println(registerAgainMsg + "\n");
+			}
+		}
 	}
 }
