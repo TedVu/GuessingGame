@@ -84,10 +84,8 @@ public class ClientHandler extends Thread {
 			}
 
 		} catch (IOException e) {
-
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		} finally {
-			// avoid leaking resource
 			closeResource();
 		}
 	}
@@ -104,7 +102,9 @@ public class ClientHandler extends Thread {
 				connection.close();
 			}
 		} catch (IOException e) {
-
+			System.out.println(e.getMessage());
 		}
 	}
+
+	
 }
