@@ -46,7 +46,10 @@ public class ClientHandler extends Thread {
 			do {
 				out.write("Please specify your guess number here:\n");
 				out.flush();
+				KeepAliveServer keepAliveThread = new KeepAliveServer(connection);
+				keepAliveThread.start();
 				String inClient = in.readLine();
+				keepAliveThread.interrupt();
 				try {
 					int guessNum = Integer.parseInt(inClient);
 					if (guessNum == randomNum) {
@@ -106,5 +109,4 @@ public class ClientHandler extends Thread {
 		}
 	}
 
-	
 }

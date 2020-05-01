@@ -22,6 +22,7 @@ public class Client {
 	private Scanner inputClient;
 	private boolean isAlive;
 	private ClientPingThread pingThread;
+	private String guessString;
 
 	public Client() {
 
@@ -49,7 +50,13 @@ public class Client {
 			// kept track by server, when reaching max guess server will send code FAIL
 			// with fail message
 			do {
-				String guessString = inputClient.nextLine();
+				guessString = null;
+
+				KeepAliveThreadClient keepAliveThread = new KeepAliveThreadClient(this);
+				keepAliveThread.start();
+				guessString = inputClient.nextLine();
+				keepAliveThread.interrupt();
+
 				outSocket.write(guessString);
 				outSocket.write("\n");
 				outSocket.flush();
@@ -111,6 +118,10 @@ public class Client {
 
 	public void setServerDown() {
 		isAlive = false;
+	}
+
+	public String getGuessString() {
+		return guessString;
 	}
 
 }
