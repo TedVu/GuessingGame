@@ -20,25 +20,16 @@ public class Client {
 	private BufferedWriter outSocket;
 	private BufferedReader inSocket;
 	private Scanner inputClient;
-	private boolean isAlive;
-	private ClientPingThread pingThread;
 	private String guessString;
 
 	public Client() {
 
 		try {
 			socket = new Socket(HOST, PORT); // HOST and PORT of Server
-			isAlive = true;
-			pingThread = new ClientPingThread(this);
-			pingThread.start();
 
 			// obtain stream from socket for communication
 			outSocket = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 			inSocket = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-			outSocket.write("PLAYGAME");
-			outSocket.write("\n");
-			outSocket.flush();
 
 			String welcomeMsg = inSocket.readLine();
 			String command = inSocket.readLine();
@@ -80,11 +71,7 @@ public class Client {
 			} while (true);
 
 		} catch (IOException e) {
-			if (isAlive) {
-				System.out.println(e.getMessage());
-			} else {
-				System.out.println("Server is down please reboot the server\n");
-			}
+			System.out.println(e.getMessage());
 
 		} finally {
 			// avoid leaking of resource make sure to close the stream and connection
@@ -114,10 +101,6 @@ public class Client {
 
 	public Socket getConnection() {
 		return socket;
-	}
-
-	public void setServerDown() {
-		isAlive = false;
 	}
 
 	public String getGuessString() {
