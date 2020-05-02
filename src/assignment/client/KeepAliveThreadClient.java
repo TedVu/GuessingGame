@@ -17,10 +17,13 @@ public class KeepAliveThreadClient extends Thread {
 		try {
 			BufferedReader inSocket = new BufferedReader(
 					new InputStreamReader(client.getConnection().getInputStream()));
-			while (true && !client.getConnection().isClosed()) {
+			// Keep handling ping when client playing game
+			while (!client.getConnection().isClosed()) {
+				// only accept and printout message when client has not input anything
 				if (inSocket.ready() && client.getGuessString() == null) {
 					String keepAlive = inSocket.readLine();
 					System.out.print("\n" + keepAlive + " ");
+					// when client input a guess break the loop and end this thread
 				} else if (client.getGuessString() != null) {
 					break;
 				}

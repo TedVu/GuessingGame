@@ -1,6 +1,5 @@
 package assignment.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -12,7 +11,6 @@ public class Server {
 	private static final int MIN = 0;
 	private static final int MAX = 12;
 	private Socket connection;
-	private BufferedReader in;
 
 	public Server() {
 		ServerSocket server = null;

@@ -36,6 +36,7 @@ public class Client {
 			System.out.println("\t" + welcomeMsg + "\n");
 			System.out.print(command + " ");
 			inputClient = new Scanner(System.in);
+			
 
 			// Client will guess number in a loop and maximum of 4 guesses, this will be
 			// kept track by server, when reaching max guess server will send code FAIL

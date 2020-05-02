@@ -8,7 +8,7 @@ import java.net.Socket;
 public class KeepAliveServer extends Thread {
 
 	private Socket connection;
-	private static final int KEEP_ALIVE_INTERVAL = 5000;
+	private static final int KEEP_ALIVE_INTERVAL = 5000; // 5 seconds
 
 	public KeepAliveServer(Socket connection) {
 		this.connection = connection;
@@ -19,14 +19,15 @@ public class KeepAliveServer extends Thread {
 		try {
 			while (true) {
 				BufferedWriter out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
-				Thread.sleep(KEEP_ALIVE_INTERVAL);
+				Thread.sleep(KEEP_ALIVE_INTERVAL); // sleep for 5 seconds
+				// sending keepalive message every 5 seconds
 				out.write("Please specify your guess number here:\n");
 				out.flush();
 			}
 		} catch (IOException ex) {
 
 		} catch (InterruptedException e) {
-			
+
 		}
 	}
 }
