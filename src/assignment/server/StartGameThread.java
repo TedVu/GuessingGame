@@ -39,6 +39,7 @@ public class StartGameThread extends Thread {
 		this.mainServer = mainServer;
 	}
 
+	@Override
 	public synchronized void run() {
 		if (!mainServer.getStartGameThreadExist()) {
 			try {
@@ -53,7 +54,7 @@ public class StartGameThread extends Thread {
 				e.printStackTrace();
 			}
 			mainServer.setStartGameThreadExist();
-		}else {
+		} else {
 			logger.setUseParentHandlers(false);
 		}
 

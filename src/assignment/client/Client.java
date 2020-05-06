@@ -16,6 +16,7 @@ public class Client {
 	private static final int WAIT_TIME = 22;
 
 	private Socket socket;
+	private UDPClient UDPSocket;
 	private BufferedWriter outSocket;
 	private BufferedReader inSocket;
 	private Scanner inputClient;
@@ -24,7 +25,10 @@ public class Client {
 
 	public Client() {
 		try {
+			UDPSocket = new UDPClient();
+			UDPSocket.start();
 			socket = new Socket(HOST, PORT);
+		
 
 			inputClient = new Scanner(System.in);
 
@@ -99,7 +103,7 @@ public class Client {
 				System.out.println("\n\t" + finalMsg + "\t");
 				String finalResult = inSocket.readLine();
 				System.out.println("\n" + finalResult);
-				
+
 				waitTime = WAIT_TIME;
 				repromptPlayAgain(waitTime);
 				// releasing all the resource when shutting down
@@ -115,7 +119,7 @@ public class Client {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		UDPSocket.setEndGame();
 	}
 
 	private void repromptPlayAgain(int waitTime) throws IOException {

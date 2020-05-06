@@ -1,9 +1,13 @@
 package assignment.server;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -13,7 +17,7 @@ import java.util.logging.SimpleFormatter;
 public class Server {
 
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
-	private FileHandler fileHandler;
+	private FileHandler communicationFileHandler;
 
 	public static final int PORT = 9090; // your allocated port
 	public static final int MIN_GUESS = 0;
@@ -23,8 +27,11 @@ public class Server {
 	public static final int MAX_PLAYER_QUEUE = 6;
 	public static final int MAX_NUM_GUESS = 4;
 
-	private Socket connection;
+	private ServerSocket TCPServer;
+	private Socket TCPSocket;
+	private DatagramSocket UDPSocket;
 	private Queue<ClientGameHandler> lobbyQueue;
+	private List<UDPClientHandler> clientPings;
 	private int round;
 	private Boolean onRound;
 	private Boolean endTimer = false;
@@ -34,33 +41,50 @@ public class Server {
 
 	public Server() {
 		try {
-			fileHandler = new FileHandler("CommunicationLogs.log");
-			logger.addHandler(fileHandler);
+			communicationFileHandler = new FileHandler("CommunicationLogs.log");
+			logger.addHandler(communicationFileHandler);
 			SimpleFormatter formatter = new SimpleFormatter();
-			fileHandler.setFormatter(formatter);
+			communicationFileHandler.setFormatter(formatter);
 			logger.setUseParentHandlers(false);
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		ServerSocket server;
 		round = 1;
 		lobbyQueue = new LinkedList<ClientGameHandler>();
+		clientPings = new ArrayList<UDPClientHandler>();
 
 		try {
-			server = new ServerSocket(PORT);
-			System.out.println("Server is running on port " + PORT);
+			UDPSocket = new DatagramSocket(PORT);
+			TCPServer = new ServerSocket(PORT);
+			System.out.println("TCP Server is running on port " + PORT);
+			System.out.println("UDP Server is running on port " + PORT);
 
 			while (true) {
 				onRound = false;
 
-				connection = server.accept();
-				logger.log(Level.INFO, connection.getRemoteSocketAddress() + " CONNECT TO SERVER");
-				ClientGameHandler clientHandler = new ClientGameHandler(connection);
-				Thread regThread = new Thread(new ClientRegistrationHandler(lobbyQueue, clientHandler, connection));
+				TCPSocket = TCPServer.accept();
+
+				byte[] buf = new byte[1024];
+				DatagramPacket receivePacket = new DatagramPacket(buf, 1024);
+				UDPSocket.receive(receivePacket);
+
+				logger.log(Level.INFO, TCPSocket.getRemoteSocketAddress() + " CONNECT TO SERVER");
+
+				ClientGameHandler clientHandler = new ClientGameHandler(TCPSocket);
+
+				Thread regThread = new Thread(new ClientRegistrationHandler(lobbyQueue, clientHandler, TCPSocket));
 				regThread.start();
+
+				regThread.join(); // will it affect in any way ?
+
+				UDPClientHandler clientPingHandler = new UDPClientHandler(receivePacket.getPort(),
+						clientHandler.getClientName());
+				clientPings.add(clientPingHandler);
+				clientPingHandler.start();
 
 				if (!onRound) {
 					Thread startGameThread = new StartGameThread(this);
@@ -69,6 +93,9 @@ public class Server {
 				}
 			}
 		} catch (IOException e) {
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

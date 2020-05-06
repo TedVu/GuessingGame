@@ -97,6 +97,25 @@ public enum CommunicationCode {
 			// TODO Auto-generated method stub
 			return "ERROR";
 		}
+	},
+
+	SERVERUP {
+
+		@Override
+		public String toString() {
+			// TODO Auto-generated method stub
+			return "SERVERUP";
+		}
+
+	},
+
+	REQUESTCONNECT {
+
+		@Override
+		public String toString() {
+			return "REQUESTCONNECT";
+		}
+
 	}
 
 	;
