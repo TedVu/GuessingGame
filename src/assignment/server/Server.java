@@ -24,7 +24,7 @@ public class Server {
 	public static final int MAX_GUESS = 12;
 	public static final int MAX_PLAYER_EACH_ROUND = 3;
 	public static final int TIME_PER_ROUND = 20; // in seconds
-	public static final int MAX_PLAYER_QUEUE = 6;
+	public static final int MAX_PLAYER_QUEUE = 4;
 	public static final int MAX_NUM_GUESS = 4;
 
 	private ServerSocket TCPServer;
@@ -60,8 +60,8 @@ public class Server {
 		try {
 			UDPSocket = new DatagramSocket(PORT);
 			TCPServer = new ServerSocket(PORT);
-			System.out.println("TCP Server is running on port " + PORT);
-			System.out.println("UDP Server is running on port " + PORT);
+			System.out.println("TCP Server is running on port " + PORT + " to handle gameplay");
+			System.out.println("UDP Server is running on port " + PORT + " to handle ping");
 
 			while (true) {
 				onRound = false;
@@ -79,8 +79,12 @@ public class Server {
 				Thread regThread = new Thread(new ClientRegistrationHandler(lobbyQueue, clientHandler, TCPSocket));
 				regThread.start();
 
-				regThread.join(); // will it affect in any way ?
+				// call join() here will have the most effect on the very first player
+				// blocking START game before actually there is a player
+				regThread.join();
 
+				// start a ping thread concurrent with gameplay, the effect is pinging
+				// between server and client during gameplay
 				UDPClientHandler clientPingHandler = new UDPClientHandler(receivePacket.getPort(),
 						clientHandler.getClientName());
 				clientPings.add(clientPingHandler);
@@ -93,9 +97,9 @@ public class Server {
 				}
 			}
 		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 	}
 

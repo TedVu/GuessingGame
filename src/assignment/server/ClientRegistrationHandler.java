@@ -7,14 +7,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Queue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
 public class ClientRegistrationHandler implements Runnable {
-
-	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
 
 	private Queue<ClientGameHandler> queue;
 	private ClientGameHandler clientHandler;
@@ -48,7 +44,6 @@ public class ClientRegistrationHandler implements Runnable {
 						out.write("\n");
 						out.write("Register successful !!! please wait for next available round...\n");
 						out.flush();
-						logger.log(Level.INFO, nameClient + " REGISTER SUCCESSFUL");
 						break;
 					} else {
 						out.write(CommunicationCode.FULL.toString());
@@ -60,7 +55,6 @@ public class ClientRegistrationHandler implements Runnable {
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

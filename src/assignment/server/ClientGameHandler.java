@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
+/**
+ * @author Ted Vu - S3678491
+ *
+ */
 public class ClientGameHandler extends Thread {
 
 	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
@@ -45,9 +49,10 @@ public class ClientGameHandler extends Thread {
 
 		int numGuess = Server.MAX_NUM_GUESS;
 		try {
-
+			// setting up streams for communication
 			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			out = new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+
 			out.write("Welcome to guessing game round " + roundNumber);
 			out.write("\n");
 			out.flush();
@@ -60,9 +65,11 @@ public class ClientGameHandler extends Thread {
 				out.flush();
 				String inClient = in.readLine();
 
+				// may be interrupted due to timer
 				if (this.isInterrupted()) {
 					break;
 				}
+
 				if (inClient.equalsIgnoreCase("e")) {
 					logger.log(Level.INFO, clientName + " EXITED GAME");
 					numClientGuess--;
@@ -78,6 +85,8 @@ public class ClientGameHandler extends Thread {
 				}
 				try {
 					int guessNum = Integer.parseInt(inClient);
+
+					// avoid race condition here
 					synchronized (logger) {
 						logger.log(Level.INFO, clientName + " GUESS " + guessNum);
 					}

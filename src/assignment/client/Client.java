@@ -25,10 +25,10 @@ public class Client {
 
 	public Client() {
 		try {
+			// start a thread to handle ping from client
 			UDPSocket = new UDPClient();
 			UDPSocket.start();
 			socket = new Socket(HOST, PORT);
-		
 
 			inputClient = new Scanner(System.in);
 
@@ -67,7 +67,7 @@ public class Client {
 						System.out
 								.print("\n\nRound timer goes off, no guess will be recorded\nHit enter to continue: ");
 						inputClient.nextLine();
-						System.out.println("");// print newline here to format result msg
+						System.out.println("");
 					}
 
 					outSocket.write(guessString);
@@ -180,7 +180,7 @@ public class Client {
 			outSocket.flush();
 
 			String registerCode = inSocket.readLine();
-			if (registerCode.equalsIgnoreCase("NOTFULL")) {
+			if (registerCode.equalsIgnoreCase(CommunicationCode.NOTFULL.toString())) {
 				break;
 			} else {
 				String registerAgainMsg = inSocket.readLine();

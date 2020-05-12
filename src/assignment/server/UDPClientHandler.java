@@ -6,16 +6,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 
 import assignment.client.CommunicationCode;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class is responsible for ping
+ */
 public class UDPClientHandler extends Thread {
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
-	private FileHandler fileHandler;
 
 	private int clientPort;
 	private String clientName;
@@ -24,7 +26,7 @@ public class UDPClientHandler extends Thread {
 	private DatagramSocket socket;
 
 	public UDPClientHandler(int clientPort, String clientName) {
-		
+
 		this.clientPort = clientPort;
 		this.clientName = clientName;
 	}
@@ -68,15 +70,13 @@ public class UDPClientHandler extends Thread {
 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
-		} // will be netprog1
-		catch (SocketException e) {
+		} catch (SocketException e) {
 			System.out.println(e.getMessage());
 		} catch (IOException e) {
 			logger.log(Level.INFO, "UDP Socket at " + socket.getLocalSocketAddress() + " closes");
 			serverRunning = false;
 
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
 			socket.close();

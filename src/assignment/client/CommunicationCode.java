@@ -6,7 +6,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "SUCCESS";
 		}
 
@@ -15,7 +14,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "FAIL";
 		}
 
@@ -24,7 +22,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "CONTINUE";
 		}
 
@@ -34,7 +31,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "TIMEOUT";
 		}
 
@@ -44,7 +40,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "EXIT";
 		}
 
@@ -54,7 +49,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "FULL";
 		}
 
@@ -64,7 +58,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "NOTFULL";
 		}
 
@@ -74,7 +67,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "QUIT";
 		}
 
@@ -84,7 +76,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "PLAYAGAIN";
 		}
 
@@ -94,7 +85,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "ERROR";
 		}
 	},
@@ -103,7 +93,6 @@ public enum CommunicationCode {
 
 		@Override
 		public String toString() {
-			// TODO Auto-generated method stub
 			return "SERVERUP";
 		}
 

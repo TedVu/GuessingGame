@@ -68,7 +68,6 @@ public class StartGameThread extends Thread {
 			// synching effect when prompting
 			if (initialPrompt) {
 				synchronized (initialPrompt) {
-					// initialPrompt = false;
 					mainServer.setInitialPrompt(false);
 				}
 
@@ -133,7 +132,6 @@ public class StartGameThread extends Thread {
 						mainServer.setInitialPrompt(true);
 
 					} else {
-						// initialPrompt = true;
 						mainServer.setInitialPrompt(true);
 						System.out.println("\nThere is currently ongoing round or no people joining this round");
 					}
