@@ -8,10 +8,16 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class represents a client/player
+ *
+ */
 public class Client {
 
-	private static final int PORT = 9090;
-	private static final String HOST = "localhost";
+	private static final int PORT = 9090; // server port number
+	private static final String HOST = "localhost"; // where server locates (i.e:netprog2.csit.rmit.edu.au)
 
 	private static final int WAIT_TIME = 22;
 
