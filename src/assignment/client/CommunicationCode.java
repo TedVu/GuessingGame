@@ -1,5 +1,10 @@
 package assignment.client;
 
+/**
+ * @author Ted Vu - S3678491 CommunicationCode so clients and server can
+ *         communicate with each other
+ *
+ */
 public enum CommunicationCode {
 
 	SUCCESS {

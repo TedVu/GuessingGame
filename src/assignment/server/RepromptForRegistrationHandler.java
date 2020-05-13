@@ -12,6 +12,11 @@ import java.util.logging.Logger;
 
 import assignment.client.CommunicationCode;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class is responsible for reprompting client
+ */
 public class RepromptForRegistrationHandler extends Thread {
 
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
@@ -39,8 +44,6 @@ public class RepromptForRegistrationHandler extends Thread {
 				out.write("Do you want to play again (p-play again | q-quit)?\n");
 				out.flush();
 
-				// some form of timer implement here
-				// if not receive any response for an amount of time kill this thread
 				String answer = null;
 				answer = in.readLine();
 
@@ -87,7 +90,7 @@ public class RepromptForRegistrationHandler extends Thread {
 				}
 			}
 		} catch (IOException e) {
-			
+
 		}
 
 	}

@@ -20,6 +20,13 @@ import java.util.logging.SimpleFormatter;
 
 import assignment.client.CommunicationCode;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class is responsible for starting a game, it will handle<br>
+ *         gameplay in each round
+ *
+ */
 public class StartGameThread extends Thread {
 
 	private static final Logger logger = Logger.getLogger(StartGameThread.class.getName());
@@ -49,9 +56,9 @@ public class StartGameThread extends Thread {
 				fileHandler.setFormatter(formatter);
 				logger.setUseParentHandlers(false);
 			} catch (SecurityException e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			mainServer.setStartGameThreadExist();
 		} else {
@@ -66,6 +73,8 @@ public class StartGameThread extends Thread {
 
 		while (true) {
 			// synching effect when prompting
+			// if not initial prompt then just terminate gracefully this will avoid
+			// creating too many start game threads
 			if (initialPrompt) {
 				synchronized (initialPrompt) {
 					mainServer.setInitialPrompt(false);
@@ -108,6 +117,8 @@ public class StartGameThread extends Thread {
 						List<ClientGameHandler> winners = new ArrayList<>();
 						List<ClientGameHandler> losers = new ArrayList<>();
 						List<ClientGameHandler> notFinish = new ArrayList<>();
+
+						// categorize player type
 						categorizePlayers(playersInCurrentRound, playerSockets, winners, losers, notFinish);
 
 						finalResult.append("Winners: ");
@@ -179,7 +190,7 @@ public class StartGameThread extends Thread {
 				writer.write("\n");
 				writer.flush();
 			} catch (IOException e) {
-				System.err.println("Error in client side an interrupted exception occured\n");
+				System.err.println(e.getMessage());
 			}
 		}
 	}
@@ -246,8 +257,7 @@ public class StartGameThread extends Thread {
 						writer.flush();
 						logger.log(Level.INFO, "NOT FINISHED GAME BEFORE TIMER");
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println(e.getMessage());
 					}
 				}
 			}
@@ -286,7 +296,7 @@ public class StartGameThread extends Thread {
 					try {
 						this.finalize();
 					} catch (Throwable e1) {
-						e1.printStackTrace();
+						System.out.println(e1.getMessage());
 					}
 
 				}

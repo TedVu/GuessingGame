@@ -14,7 +14,7 @@ import assignment.client.CommunicationCode;
 /**
  * @author Ted Vu - S3678491
  * 
- *         This class is responsible for ping
+ *         This class is responsible for handling ping between client and server
  */
 public class UDPClientHandler extends Thread {
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
@@ -41,7 +41,7 @@ public class UDPClientHandler extends Thread {
 		}
 
 		try {
-			// after 20 seconds if no packet receive then terminate this thread
+			// after 10 seconds if no packet receive then terminate this thread
 			socket.setSoTimeout(10000);
 
 		} catch (SocketException e1) {
@@ -51,7 +51,7 @@ public class UDPClientHandler extends Thread {
 		InetAddress ip;
 		try {
 
-			ip = InetAddress.getByName("localhost");
+			ip = InetAddress.getByName("localhost"); // where the client locates (i.e netprog1.csit.rmit.edu.au)
 			while (serverRunning) {
 				DatagramPacket serverupCodePacket = new DatagramPacket(CommunicationCode.SERVERUP.toString().getBytes(),
 						CommunicationCode.SERVERUP.toString().length(), ip, clientPort);

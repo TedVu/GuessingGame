@@ -7,6 +7,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class is responsible for handling ping between client-server
+ *
+ */
 public class UDPClient extends Thread {
 
 	private boolean endGame = false;
@@ -25,8 +31,11 @@ public class UDPClient extends Thread {
 		String requestCon = CommunicationCode.REQUESTCONNECT.toString();
 		InetAddress ip;
 		try {
-			ip = InetAddress.getByName("localhost");
-			DatagramPacket requestConPacket = new DatagramPacket(requestCon.getBytes(), requestCon.length(), ip, 9090);
+			ip = InetAddress.getByName("localhost"); // where the server locates (i.e: netprog2.csit.rmit.edu.au)
+			DatagramPacket requestConPacket = new DatagramPacket(requestCon.getBytes(), requestCon.length(), ip, 9090); // port
+																														// number
+																														// of
+																														// server
 
 			UDPClient.send(requestConPacket);
 

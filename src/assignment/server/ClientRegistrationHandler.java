@@ -10,6 +10,12 @@ import java.util.Queue;
 
 import assignment.client.CommunicationCode;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class is responsible for handling client registration
+ *
+ */
 public class ClientRegistrationHandler implements Runnable {
 
 	private Queue<ClientGameHandler> queue;
@@ -55,9 +61,8 @@ public class ClientRegistrationHandler implements Runnable {
 			}
 
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
-
 	}
 
 }

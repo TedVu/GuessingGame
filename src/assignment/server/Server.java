@@ -14,17 +14,24 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
+/**
+ * @author Ted Vu - S3678491
+ * 
+ *         This class represents a listening endpoint of a connection request It<br>
+ *         is also responsible for managing the thread pool
+ *
+ */
 public class Server {
 
 	private static final Logger logger = Logger.getLogger(Server.class.getName());
 	private FileHandler communicationFileHandler;
 
-	public static final int PORT = 9090; // your allocated port
+	public static final int PORT = 9090; // your allocated port on school server
 	public static final int MIN_GUESS = 0;
 	public static final int MAX_GUESS = 12;
-	public static final int MAX_PLAYER_EACH_ROUND = 3;
+	public static final int MAX_PLAYER_EACH_ROUND = 3; // 3 player in each round only
 	public static final int TIME_PER_ROUND = 20; // in seconds
-	public static final int MAX_PLAYER_QUEUE = 4;
+	public static final int MAX_PLAYER_QUEUE = 6; // 6 player waiting in the queue
 	public static final int MAX_NUM_GUESS = 4;
 
 	private ServerSocket TCPServer;
@@ -40,17 +47,18 @@ public class Server {
 	private boolean startGameThreadExist = false;
 
 	public Server() {
+		// register logger here
 		try {
 			communicationFileHandler = new FileHandler("CommunicationLogs.log");
 			logger.addHandler(communicationFileHandler);
 			SimpleFormatter formatter = new SimpleFormatter();
 			communicationFileHandler.setFormatter(formatter);
-			logger.setUseParentHandlers(false);
+			logger.setUseParentHandlers(false); // avoid logging to console
 
 		} catch (SecurityException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		round = 1;
@@ -58,6 +66,8 @@ public class Server {
 		clientPings = new ArrayList<UDPClientHandler>();
 
 		try {
+			// we have two servers one for handling ping
+			// one for handling gameplay
 			UDPSocket = new DatagramSocket(PORT);
 			TCPServer = new ServerSocket(PORT);
 			System.out.println("TCP Server is running on port " + PORT + " to handle gameplay");
